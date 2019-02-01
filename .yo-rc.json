@@ -1,0 +1,35 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.msst.platform"
+    },
+    "jhipsterVersion": "5.8.1",
+    "applicationType": "monolith",
+    "baseName": "msstPlatform",
+    "packageName": "com.msst.platform",
+    "packageFolder": "com/msst/platform",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "no",
+    "enableHibernateCache": false,
+    "websocket": false,
+    "databaseType": "mongodb",
+    "devDatabaseType": "mongodb",
+    "prodDatabaseType": "mongodb",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "YjU3NWM4ZTUwNzRkNTUzMDQwZDQ1MzE2MDJhZTg4NjI4NjgxMDM1ZjIwNWViOTE1NGZlN2U5ZGE1Y2UwMWZmODQxMzU0NGMyMzIzYjg2NTJjOTkyM2Y4NjgwZTU5ZmJiYmZlMzQ5YTIyZDk5YjVmOWQwMmVmNTczN2Q4ZTYxYjc=",
+    "clientFramework": "react",
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false
+  }
+}
