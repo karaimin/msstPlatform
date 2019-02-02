@@ -6,7 +6,7 @@ export interface IMovie {
   name?: string;
   duration?: Moment;
   description?: string;
-  subtitle?: ISubtitle;
+  subtitles?: ISubtitle[];
 }
 
 export const defaultValue: Readonly<IMovie> = {};

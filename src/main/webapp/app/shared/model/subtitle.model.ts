@@ -5,10 +5,10 @@ import { ISubtitleLine } from 'app/shared/model/subtitle-line.model';
 export interface ISubtitle {
   id?: string;
   version?: string;
-  movies?: IMovie[];
+  movie?: IMovie;
   subtitle?: ISubtitle;
   sources?: ISubtitle[];
-  subtitleLine?: ISubtitleLine;
+  lines?: ISubtitleLine[];
 }
 
 export const defaultValue: Readonly<ISubtitle> = {};

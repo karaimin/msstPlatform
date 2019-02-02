@@ -6,8 +6,8 @@ export interface ISubtitleLine {
   id?: string;
   startTime?: Moment;
   endTime?: Moment;
-  subtitles?: ISubtitle[];
-  lineVersion?: ILineVersion;
+  subtitle?: ISubtitle;
+  versions?: ILineVersion[];
 }
 
 export const defaultValue: Readonly<ISubtitleLine> = {};

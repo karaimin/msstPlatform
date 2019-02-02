@@ -38,7 +38,6 @@ export class Movie extends React.Component<IMovieProps> {
                 <th>Name</th>
                 <th>Duration</th>
                 <th>Description</th>
-                <th>Subtitle</th>
                 <th />
               </tr>
             </thead>
@@ -55,7 +54,6 @@ export class Movie extends React.Component<IMovieProps> {
                     <TextFormat type="date" value={movie.duration} format={APP_DATE_FORMAT} />
                   </td>
                   <td>{movie.description}</td>
-                  <td>{movie.subtitle ? <Link to={`subtitle/${movie.subtitle.id}`}>{movie.subtitle.id}</Link> : ''}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${movie.id}`} color="info" size="sm">

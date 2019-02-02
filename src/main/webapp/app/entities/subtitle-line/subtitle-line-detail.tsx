@@ -40,8 +40,8 @@ export class SubtitleLineDetail extends React.Component<ISubtitleLineDetailProps
             <dd>
               <TextFormat value={subtitleLineEntity.endTime} type="date" format={APP_DATE_FORMAT} />
             </dd>
-            <dt>Line Version</dt>
-            <dd>{subtitleLineEntity.lineVersion ? subtitleLineEntity.lineVersion.id : ''}</dd>
+            <dt>Subtitle</dt>
+            <dd>{subtitleLineEntity.subtitle ? subtitleLineEntity.subtitle.id : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/subtitle-line" replace color="info">
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

@@ -16,10 +16,10 @@
     ],
     "relationships": [
         {
-            "relationshipName": "subtitle",
+            "relationshipType": "one-to-many",
+            "relationshipName": "subtitles",
             "otherEntityName": "subtitle",
-            "relationshipType": "many-to-one",
-            "otherEntityField": "id"
+            "otherEntityRelationshipName": "movie"
         }
     ],
     "changelogDate": "20190201104925",

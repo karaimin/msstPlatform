@@ -8,8 +8,8 @@ import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipste
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
-import { ILineVersion } from 'app/shared/model/line-version.model';
-import { getEntities as getLineVersions } from 'app/entities/line-version/line-version.reducer';
+import { ISubtitle } from 'app/shared/model/subtitle.model';
+import { getEntities as getSubtitles } from 'app/entities/subtitle/subtitle.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './subtitle-line.reducer';
 import { ISubtitleLine } from 'app/shared/model/subtitle-line.model';
 // tslint:disable-next-line:no-unused-variable
@@ -20,14 +20,14 @@ export interface ISubtitleLineUpdateProps extends StateProps, DispatchProps, Rou
 
 export interface ISubtitleLineUpdateState {
   isNew: boolean;
-  lineVersionId: string;
+  subtitleId: string;
 }
 
 export class SubtitleLineUpdate extends React.Component<ISubtitleLineUpdateProps, ISubtitleLineUpdateState> {
   constructor(props) {
     super(props);
     this.state = {
-      lineVersionId: '0',
+      subtitleId: '0',
       isNew: !this.props.match.params || !this.props.match.params.id
     };
   }
@@ -45,7 +45,7 @@ export class SubtitleLineUpdate extends React.Component<ISubtitleLineUpdateProps
       this.props.getEntity(this.props.match.params.id);
     }
 
-    this.props.getLineVersions();
+    this.props.getSubtitles();
   }
 
   saveEntity = (event, errors, values) => {
@@ -72,7 +72,7 @@ export class SubtitleLineUpdate extends React.Component<ISubtitleLineUpdateProps
   };
 
   render() {
-    const { subtitleLineEntity, lineVersions, loading, updating } = this.props;
+    const { subtitleLineEntity, subtitles, loading, updating } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -121,11 +121,11 @@ export class SubtitleLineUpdate extends React.Component<ISubtitleLineUpdateProps
                   />
                 </AvGroup>
                 <AvGroup>
-                  <Label for="lineVersion.id">Line Version</Label>
-                  <AvInput id="subtitle-line-lineVersion" type="select" className="form-control" name="lineVersion.id">
+                  <Label for="subtitle.id">Subtitle</Label>
+                  <AvInput id="subtitle-line-subtitle" type="select" className="form-control" name="subtitle.id">
                     <option value="" key="0" />
-                    {lineVersions
-                      ? lineVersions.map(otherEntity => (
+                    {subtitles
+                      ? subtitles.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
                             {otherEntity.id}
                           </option>
@@ -153,7 +153,7 @@ export class SubtitleLineUpdate extends React.Component<ISubtitleLineUpdateProps
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
-  lineVersions: storeState.lineVersion.entities,
+  subtitles: storeState.subtitle.entities,
   subtitleLineEntity: storeState.subtitleLine.entity,
   loading: storeState.subtitleLine.loading,
   updating: storeState.subtitleLine.updating,
@@ -161,7 +161,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
-  getLineVersions,
+  getSubtitles,
   getEntity,
   updateEntity,
   createEntity,

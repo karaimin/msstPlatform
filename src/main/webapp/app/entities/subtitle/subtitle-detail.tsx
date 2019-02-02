@@ -32,10 +32,10 @@ export class SubtitleDetail extends React.Component<ISubtitleDetailProps> {
               <span id="version">Version</span>
             </dt>
             <dd>{subtitleEntity.version}</dd>
+            <dt>Movie</dt>
+            <dd>{subtitleEntity.movie ? subtitleEntity.movie.id : ''}</dd>
             <dt>Subtitle</dt>
             <dd>{subtitleEntity.subtitle ? subtitleEntity.subtitle.id : ''}</dd>
-            <dt>Subtitle Line</dt>
-            <dd>{subtitleEntity.subtitleLine ? subtitleEntity.subtitleLine.id : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/subtitle" replace color="info">
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

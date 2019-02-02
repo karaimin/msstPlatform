@@ -37,7 +37,7 @@ export class LineVersion extends React.Component<ILineVersionProps> {
                 <th>ID</th>
                 <th>Version</th>
                 <th>Text</th>
-                <th>Line Version Rating</th>
+                <th>Subtitle Line</th>
                 <th />
               </tr>
             </thead>
@@ -52,8 +52,8 @@ export class LineVersion extends React.Component<ILineVersionProps> {
                   <td>{lineVersion.version}</td>
                   <td>{lineVersion.text}</td>
                   <td>
-                    {lineVersion.lineVersionRating ? (
-                      <Link to={`line-version-rating/${lineVersion.lineVersionRating.id}`}>{lineVersion.lineVersionRating.id}</Link>
+                    {lineVersion.subtitleLine ? (
+                      <Link to={`subtitle-line/${lineVersion.subtitleLine.id}`}>{lineVersion.subtitleLine.id}</Link>
                     ) : (
                       ''
                     )}

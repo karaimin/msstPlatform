@@ -4,7 +4,7 @@ export interface ILineVersionRating {
   id?: string;
   rating?: number;
   comment?: string;
-  lineVersions?: ILineVersion[];
+  lineVersion?: ILineVersion;
 }
 
 export const defaultValue: Readonly<ILineVersionRating> = {};

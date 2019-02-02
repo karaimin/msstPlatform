@@ -36,6 +36,8 @@ export class LineVersionRatingDetail extends React.Component<ILineVersionRatingD
               <span id="comment">Comment</span>
             </dt>
             <dd>{lineVersionRatingEntity.comment}</dd>
+            <dt>Line Version</dt>
+            <dd>{lineVersionRatingEntity.lineVersion ? lineVersionRatingEntity.lineVersion.id : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/line-version-rating" replace color="info">
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

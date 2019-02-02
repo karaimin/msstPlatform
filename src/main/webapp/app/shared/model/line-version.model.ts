@@ -5,8 +5,8 @@ export interface ILineVersion {
   id?: string;
   version?: string;
   text?: string;
-  subtitleLines?: ISubtitleLine[];
-  lineVersionRating?: ILineVersionRating;
+  subtitleLine?: ISubtitleLine;
+  ratings?: ILineVersionRating[];
 }
 
 export const defaultValue: Readonly<ILineVersion> = {};

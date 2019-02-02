@@ -1,15 +1,13 @@
 package com.msst.platform.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -31,7 +29,9 @@ public class LineVersionRating implements Serializable {
 
     @DBRef
     @Field("lineVersion")
-    private Set<LineVersion> lineVersions = new HashSet<>();
+    @JsonIgnoreProperties("ratings")
+    private LineVersion lineVersion;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -67,29 +67,17 @@ public class LineVersionRating implements Serializable {
         this.comment = comment;
     }
 
-    public Set<LineVersion> getLineVersions() {
-        return lineVersions;
+    public LineVersion getLineVersion() {
+        return lineVersion;
     }
 
-    public LineVersionRating lineVersions(Set<LineVersion> lineVersions) {
-        this.lineVersions = lineVersions;
+    public LineVersionRating lineVersion(LineVersion lineVersion) {
+        this.lineVersion = lineVersion;
         return this;
     }
 
-    public LineVersionRating addLineVersion(LineVersion lineVersion) {
-        this.lineVersions.add(lineVersion);
-        lineVersion.setLineVersionRating(this);
-        return this;
-    }
-
-    public LineVersionRating removeLineVersion(LineVersion lineVersion) {
-        this.lineVersions.remove(lineVersion);
-        lineVersion.setLineVersionRating(null);
-        return this;
-    }
-
-    public void setLineVersions(Set<LineVersion> lineVersions) {
-        this.lineVersions = lineVersions;
+    public void setLineVersion(LineVersion lineVersion) {
+        this.lineVersion = lineVersion;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

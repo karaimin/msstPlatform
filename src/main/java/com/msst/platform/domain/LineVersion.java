@@ -1,6 +1,7 @@
 package com.msst.platform.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -31,13 +32,12 @@ public class LineVersion implements Serializable {
 
     @DBRef
     @Field("subtitleLine")
-    private Set<SubtitleLine> subtitleLines = new HashSet<>();
+    @JsonIgnoreProperties("versions")
+    private SubtitleLine subtitleLine;
 
     @DBRef
-    @Field("lineVersionRating")
-    @JsonIgnoreProperties("lineVersions")
-    private LineVersionRating lineVersionRating;
-
+    @Field("ratings")
+    private Set<LineVersionRating> ratings = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -73,42 +73,42 @@ public class LineVersion implements Serializable {
         this.text = text;
     }
 
-    public Set<SubtitleLine> getSubtitleLines() {
-        return subtitleLines;
+    public SubtitleLine getSubtitleLine() {
+        return subtitleLine;
     }
 
-    public LineVersion subtitleLines(Set<SubtitleLine> subtitleLines) {
-        this.subtitleLines = subtitleLines;
+    public LineVersion subtitleLine(SubtitleLine subtitleLine) {
+        this.subtitleLine = subtitleLine;
         return this;
     }
 
-    public LineVersion addSubtitleLine(SubtitleLine subtitleLine) {
-        this.subtitleLines.add(subtitleLine);
-        subtitleLine.setLineVersion(this);
+    public void setSubtitleLine(SubtitleLine subtitleLine) {
+        this.subtitleLine = subtitleLine;
+    }
+
+    public Set<LineVersionRating> getRatings() {
+        return ratings;
+    }
+
+    public LineVersion ratings(Set<LineVersionRating> lineVersionRatings) {
+        this.ratings = lineVersionRatings;
         return this;
     }
 
-    public LineVersion removeSubtitleLine(SubtitleLine subtitleLine) {
-        this.subtitleLines.remove(subtitleLine);
-        subtitleLine.setLineVersion(null);
+    public LineVersion addRatings(LineVersionRating lineVersionRating) {
+        this.ratings.add(lineVersionRating);
+        lineVersionRating.setLineVersion(this);
         return this;
     }
 
-    public void setSubtitleLines(Set<SubtitleLine> subtitleLines) {
-        this.subtitleLines = subtitleLines;
-    }
-
-    public LineVersionRating getLineVersionRating() {
-        return lineVersionRating;
-    }
-
-    public LineVersion lineVersionRating(LineVersionRating lineVersionRating) {
-        this.lineVersionRating = lineVersionRating;
+    public LineVersion removeRatings(LineVersionRating lineVersionRating) {
+        this.ratings.remove(lineVersionRating);
+        lineVersionRating.setLineVersion(null);
         return this;
     }
 
-    public void setLineVersionRating(LineVersionRating lineVersionRating) {
-        this.lineVersionRating = lineVersionRating;
+    public void setRatings(Set<LineVersionRating> lineVersionRatings) {
+        this.ratings = lineVersionRatings;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

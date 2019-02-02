@@ -37,6 +37,7 @@ export class LineVersionRating extends React.Component<ILineVersionRatingProps> 
                 <th>ID</th>
                 <th>Rating</th>
                 <th>Comment</th>
+                <th>Line Version</th>
                 <th />
               </tr>
             </thead>
@@ -50,6 +51,13 @@ export class LineVersionRating extends React.Component<ILineVersionRatingProps> 
                   </td>
                   <td>{lineVersionRating.rating}</td>
                   <td>{lineVersionRating.comment}</td>
+                  <td>
+                    {lineVersionRating.lineVersion ? (
+                      <Link to={`line-version/${lineVersionRating.lineVersion.id}`}>{lineVersionRating.lineVersion.id}</Link>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${lineVersionRating.id}`} color="info" size="sm">
