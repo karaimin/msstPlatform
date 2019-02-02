@@ -40,4 +40,12 @@ public interface SubtitleService {
      * @param id the id of the entity
      */
     void delete(String id);
+
+   List<Subtitle> getTranslatedSubtitles();
+
+   List<Subtitle> getTranslatedSubtitles(String movieName);
+
+   Subtitle getTranslatedSubtitle(String providerId);
+
+   Subtitle downloadSubtitle(String providerId);
 }

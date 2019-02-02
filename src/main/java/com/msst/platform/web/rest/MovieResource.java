@@ -1,5 +1,6 @@
 package com.msst.platform.web.rest;
 import com.msst.platform.domain.Movie;
+import com.msst.platform.domain.Subtitle;
 import com.msst.platform.service.MovieService;
 import com.msst.platform.web.rest.errors.BadRequestAlertException;
 import com.msst.platform.web.rest.util.HeaderUtil;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,5 +109,13 @@ public class MovieResource {
         log.debug("REST request to delete Movie : {}", id);
         movieService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
+    }
+
+    @GetMapping("/movies/{id}/subtitles")
+    public ResponseEntity<Collection<Subtitle>> getMovieSubtitles(@PathVariable String id) {
+        log.debug("REST request to get subtitles for movie with Movie : '{}'", id);
+        Optional<Movie> movie = movieService.findOne(id);
+        return movie.<ResponseEntity<Collection<Subtitle>>>map(movie1 -> ResponseEntity.ok(movie1.getSubtitles()))
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

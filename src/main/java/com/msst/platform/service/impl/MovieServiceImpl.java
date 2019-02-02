@@ -1,11 +1,11 @@
 package com.msst.platform.service.impl;
 
-import com.msst.platform.service.MovieService;
 import com.msst.platform.domain.Movie;
+import com.msst.platform.domain.Subtitle;
 import com.msst.platform.repository.MovieRepository;
+import com.msst.platform.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,6 +68,7 @@ public class MovieServiceImpl implements MovieService {
      */
     @Override
     public void delete(String id) {
-        log.debug("Request to delete Movie : {}", id);        movieRepository.deleteById(id);
+        log.debug("Request to delete Movie : {}", id);
+        movieRepository.deleteById(id);
     }
 }
