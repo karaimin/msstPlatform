@@ -1,0 +1,30 @@
+{
+    "name": "LineVersionRating",
+    "fields": [
+        {
+            "fieldName": "rating",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "comment",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "lineVersion",
+            "otherEntityName": "lineVersion",
+            "otherEntityRelationshipName": "lineVersionRating"
+        }
+    ],
+    "changelogDate": "20190201104929",
+    "entityTableName": "line_version_rating",
+    "dto": "no",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

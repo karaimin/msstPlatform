@@ -1,0 +1,36 @@
+{
+    "name": "LineVersion",
+    "fields": [
+        {
+            "fieldName": "version",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "text",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "subtitleLine",
+            "otherEntityName": "subtitleLine",
+            "otherEntityRelationshipName": "lineVersion"
+        },
+        {
+            "relationshipName": "lineVersionRating",
+            "otherEntityName": "lineVersionRating",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190201104928",
+    "entityTableName": "line_version",
+    "dto": "no",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

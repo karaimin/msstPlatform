@@ -1,0 +1,44 @@
+{
+    "name": "Subtitle",
+    "fields": [
+        {
+            "fieldName": "version",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "movie",
+            "otherEntityName": "movie",
+            "otherEntityRelationshipName": "subtitle"
+        },
+        {
+            "relationshipName": "subtitle",
+            "otherEntityName": "subtitle",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "source",
+            "otherEntityName": "subtitle",
+            "otherEntityRelationshipName": "subtitle"
+        },
+        {
+            "relationshipName": "subtitleLine",
+            "otherEntityName": "subtitleLine",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190201104926",
+    "entityTableName": "subtitle",
+    "dto": "no",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

@@ -1,0 +1,36 @@
+{
+    "name": "SubtitleLine",
+    "fields": [
+        {
+            "fieldName": "startTime",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "endTime",
+            "fieldType": "Instant"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "subtitle",
+            "otherEntityName": "subtitle",
+            "otherEntityRelationshipName": "subtitleLine"
+        },
+        {
+            "relationshipName": "lineVersion",
+            "otherEntityName": "lineVersion",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20190201104927",
+    "entityTableName": "subtitle_line",
+    "dto": "no",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
