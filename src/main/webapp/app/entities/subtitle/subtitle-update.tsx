@@ -8,9 +8,9 @@ import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipste
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
+import { IMovie } from 'app/shared/model/movie.model';
+import { getEntities as getMovies } from 'app/entities/movie/movie.reducer';
 import { getEntities as getSubtitles } from 'app/entities/subtitle/subtitle.reducer';
-import { ISubtitleLine } from 'app/shared/model/subtitle-line.model';
-import { getEntities as getSubtitleLines } from 'app/entities/subtitle-line/subtitle-line.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './subtitle.reducer';
 import { ISubtitle } from 'app/shared/model/subtitle.model';
 // tslint:disable-next-line:no-unused-variable
@@ -21,18 +21,18 @@ export interface ISubtitleUpdateProps extends StateProps, DispatchProps, RouteCo
 
 export interface ISubtitleUpdateState {
   isNew: boolean;
+  movieId: string;
   subtitleId: string;
   sourceId: string;
-  subtitleLineId: string;
 }
 
 export class SubtitleUpdate extends React.Component<ISubtitleUpdateProps, ISubtitleUpdateState> {
   constructor(props) {
     super(props);
     this.state = {
+      movieId: '0',
       subtitleId: '0',
       sourceId: '0',
-      subtitleLineId: '0',
       isNew: !this.props.match.params || !this.props.match.params.id
     };
   }
@@ -50,8 +50,8 @@ export class SubtitleUpdate extends React.Component<ISubtitleUpdateProps, ISubti
       this.props.getEntity(this.props.match.params.id);
     }
 
+    this.props.getMovies();
     this.props.getSubtitles();
-    this.props.getSubtitleLines();
   }
 
   saveEntity = (event, errors, values) => {
@@ -75,7 +75,7 @@ export class SubtitleUpdate extends React.Component<ISubtitleUpdateProps, ISubti
   };
 
   render() {
-    const { subtitleEntity, subtitles, subtitleLines, loading, updating } = this.props;
+    const { subtitleEntity, movies, subtitles, loading, updating } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -104,11 +104,11 @@ export class SubtitleUpdate extends React.Component<ISubtitleUpdateProps, ISubti
                   <AvField id="subtitle-version" type="text" name="version" />
                 </AvGroup>
                 <AvGroup>
-                  <Label for="subtitle.id">Subtitle</Label>
-                  <AvInput id="subtitle-subtitle" type="select" className="form-control" name="subtitle.id">
+                  <Label for="movie.id">Movie</Label>
+                  <AvInput id="subtitle-movie" type="select" className="form-control" name="movie.id">
                     <option value="" key="0" />
-                    {subtitles
-                      ? subtitles.map(otherEntity => (
+                    {movies
+                      ? movies.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
                             {otherEntity.id}
                           </option>
@@ -117,11 +117,11 @@ export class SubtitleUpdate extends React.Component<ISubtitleUpdateProps, ISubti
                   </AvInput>
                 </AvGroup>
                 <AvGroup>
-                  <Label for="subtitleLine.id">Subtitle Line</Label>
-                  <AvInput id="subtitle-subtitleLine" type="select" className="form-control" name="subtitleLine.id">
+                  <Label for="subtitle.id">Subtitle</Label>
+                  <AvInput id="subtitle-subtitle" type="select" className="form-control" name="subtitle.id">
                     <option value="" key="0" />
-                    {subtitleLines
-                      ? subtitleLines.map(otherEntity => (
+                    {subtitles
+                      ? subtitles.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
                             {otherEntity.id}
                           </option>
@@ -149,8 +149,8 @@ export class SubtitleUpdate extends React.Component<ISubtitleUpdateProps, ISubti
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
+  movies: storeState.movie.entities,
   subtitles: storeState.subtitle.entities,
-  subtitleLines: storeState.subtitleLine.entities,
   subtitleEntity: storeState.subtitle.entity,
   loading: storeState.subtitle.loading,
   updating: storeState.subtitle.updating,
@@ -158,8 +158,8 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
+  getMovies,
   getSubtitles,
-  getSubtitleLines,
   getEntity,
   updateEntity,
   createEntity,

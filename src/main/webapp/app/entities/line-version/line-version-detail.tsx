@@ -36,8 +36,8 @@ export class LineVersionDetail extends React.Component<ILineVersionDetailProps> 
               <span id="text">Text</span>
             </dt>
             <dd>{lineVersionEntity.text}</dd>
-            <dt>Line Version Rating</dt>
-            <dd>{lineVersionEntity.lineVersionRating ? lineVersionEntity.lineVersionRating.id : ''}</dd>
+            <dt>Subtitle Line</dt>
+            <dd>{lineVersionEntity.subtitleLine ? lineVersionEntity.subtitleLine.id : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/line-version" replace color="info">
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

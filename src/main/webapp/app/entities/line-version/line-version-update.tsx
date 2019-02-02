@@ -8,8 +8,8 @@ import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipste
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
-import { ILineVersionRating } from 'app/shared/model/line-version-rating.model';
-import { getEntities as getLineVersionRatings } from 'app/entities/line-version-rating/line-version-rating.reducer';
+import { ISubtitleLine } from 'app/shared/model/subtitle-line.model';
+import { getEntities as getSubtitleLines } from 'app/entities/subtitle-line/subtitle-line.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './line-version.reducer';
 import { ILineVersion } from 'app/shared/model/line-version.model';
 // tslint:disable-next-line:no-unused-variable
@@ -20,14 +20,14 @@ export interface ILineVersionUpdateProps extends StateProps, DispatchProps, Rout
 
 export interface ILineVersionUpdateState {
   isNew: boolean;
-  lineVersionRatingId: string;
+  subtitleLineId: string;
 }
 
 export class LineVersionUpdate extends React.Component<ILineVersionUpdateProps, ILineVersionUpdateState> {
   constructor(props) {
     super(props);
     this.state = {
-      lineVersionRatingId: '0',
+      subtitleLineId: '0',
       isNew: !this.props.match.params || !this.props.match.params.id
     };
   }
@@ -45,7 +45,7 @@ export class LineVersionUpdate extends React.Component<ILineVersionUpdateProps, 
       this.props.getEntity(this.props.match.params.id);
     }
 
-    this.props.getLineVersionRatings();
+    this.props.getSubtitleLines();
   }
 
   saveEntity = (event, errors, values) => {
@@ -69,7 +69,7 @@ export class LineVersionUpdate extends React.Component<ILineVersionUpdateProps, 
   };
 
   render() {
-    const { lineVersionEntity, lineVersionRatings, loading, updating } = this.props;
+    const { lineVersionEntity, subtitleLines, loading, updating } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -104,11 +104,11 @@ export class LineVersionUpdate extends React.Component<ILineVersionUpdateProps, 
                   <AvField id="line-version-text" type="text" name="text" />
                 </AvGroup>
                 <AvGroup>
-                  <Label for="lineVersionRating.id">Line Version Rating</Label>
-                  <AvInput id="line-version-lineVersionRating" type="select" className="form-control" name="lineVersionRating.id">
+                  <Label for="subtitleLine.id">Subtitle Line</Label>
+                  <AvInput id="line-version-subtitleLine" type="select" className="form-control" name="subtitleLine.id">
                     <option value="" key="0" />
-                    {lineVersionRatings
-                      ? lineVersionRatings.map(otherEntity => (
+                    {subtitleLines
+                      ? subtitleLines.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
                             {otherEntity.id}
                           </option>
@@ -136,7 +136,7 @@ export class LineVersionUpdate extends React.Component<ILineVersionUpdateProps, 
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
-  lineVersionRatings: storeState.lineVersionRating.entities,
+  subtitleLines: storeState.subtitleLine.entities,
   lineVersionEntity: storeState.lineVersion.entity,
   loading: storeState.lineVersion.loading,
   updating: storeState.lineVersion.updating,
@@ -144,7 +144,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
-  getLineVersionRatings,
+  getSubtitleLines,
   getEntity,
   updateEntity,
   createEntity,

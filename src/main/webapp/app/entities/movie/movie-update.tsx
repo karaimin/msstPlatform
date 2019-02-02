@@ -8,8 +8,6 @@ import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipste
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
-import { ISubtitle } from 'app/shared/model/subtitle.model';
-import { getEntities as getSubtitles } from 'app/entities/subtitle/subtitle.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './movie.reducer';
 import { IMovie } from 'app/shared/model/movie.model';
 // tslint:disable-next-line:no-unused-variable
@@ -20,14 +18,12 @@ export interface IMovieUpdateProps extends StateProps, DispatchProps, RouteCompo
 
 export interface IMovieUpdateState {
   isNew: boolean;
-  subtitleId: string;
 }
 
 export class MovieUpdate extends React.Component<IMovieUpdateProps, IMovieUpdateState> {
   constructor(props) {
     super(props);
     this.state = {
-      subtitleId: '0',
       isNew: !this.props.match.params || !this.props.match.params.id
     };
   }
@@ -44,8 +40,6 @@ export class MovieUpdate extends React.Component<IMovieUpdateProps, IMovieUpdate
     } else {
       this.props.getEntity(this.props.match.params.id);
     }
-
-    this.props.getSubtitles();
   }
 
   saveEntity = (event, errors, values) => {
@@ -71,7 +65,7 @@ export class MovieUpdate extends React.Component<IMovieUpdateProps, IMovieUpdate
   };
 
   render() {
-    const { movieEntity, subtitles, loading, updating } = this.props;
+    const { movieEntity, loading, updating } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -118,19 +112,6 @@ export class MovieUpdate extends React.Component<IMovieUpdateProps, IMovieUpdate
                   </Label>
                   <AvField id="movie-description" type="text" name="description" />
                 </AvGroup>
-                <AvGroup>
-                  <Label for="subtitle.id">Subtitle</Label>
-                  <AvInput id="movie-subtitle" type="select" className="form-control" name="subtitle.id">
-                    <option value="" key="0" />
-                    {subtitles
-                      ? subtitles.map(otherEntity => (
-                          <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
-                          </option>
-                        ))
-                      : null}
-                  </AvInput>
-                </AvGroup>
                 <Button tag={Link} id="cancel-save" to="/entity/movie" replace color="info">
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
@@ -151,7 +132,6 @@ export class MovieUpdate extends React.Component<IMovieUpdateProps, IMovieUpdate
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
-  subtitles: storeState.subtitle.entities,
   movieEntity: storeState.movie.entity,
   loading: storeState.movie.loading,
   updating: storeState.movie.updating,
@@ -159,7 +139,6 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
-  getSubtitles,
   getEntity,
   updateEntity,
   createEntity,

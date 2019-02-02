@@ -12,16 +12,16 @@
     ],
     "relationships": [
         {
-            "relationshipType": "one-to-many",
             "relationshipName": "subtitle",
             "otherEntityName": "subtitle",
-            "otherEntityRelationshipName": "subtitleLine"
-        },
-        {
-            "relationshipName": "lineVersion",
-            "otherEntityName": "lineVersion",
             "relationshipType": "many-to-one",
             "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "versions",
+            "otherEntityName": "lineVersion",
+            "otherEntityRelationshipName": "subtitleLine"
         }
     ],
     "changelogDate": "20190201104927",

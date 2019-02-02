@@ -8,6 +8,8 @@ import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipste
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
+import { ILineVersion } from 'app/shared/model/line-version.model';
+import { getEntities as getLineVersions } from 'app/entities/line-version/line-version.reducer';
 import { getEntity, updateEntity, createEntity, reset } from './line-version-rating.reducer';
 import { ILineVersionRating } from 'app/shared/model/line-version-rating.model';
 // tslint:disable-next-line:no-unused-variable
@@ -18,12 +20,14 @@ export interface ILineVersionRatingUpdateProps extends StateProps, DispatchProps
 
 export interface ILineVersionRatingUpdateState {
   isNew: boolean;
+  lineVersionId: string;
 }
 
 export class LineVersionRatingUpdate extends React.Component<ILineVersionRatingUpdateProps, ILineVersionRatingUpdateState> {
   constructor(props) {
     super(props);
     this.state = {
+      lineVersionId: '0',
       isNew: !this.props.match.params || !this.props.match.params.id
     };
   }
@@ -40,6 +44,8 @@ export class LineVersionRatingUpdate extends React.Component<ILineVersionRatingU
     } else {
       this.props.getEntity(this.props.match.params.id);
     }
+
+    this.props.getLineVersions();
   }
 
   saveEntity = (event, errors, values) => {
@@ -63,7 +69,7 @@ export class LineVersionRatingUpdate extends React.Component<ILineVersionRatingU
   };
 
   render() {
-    const { lineVersionRatingEntity, loading, updating } = this.props;
+    const { lineVersionRatingEntity, lineVersions, loading, updating } = this.props;
     const { isNew } = this.state;
 
     return (
@@ -97,6 +103,19 @@ export class LineVersionRatingUpdate extends React.Component<ILineVersionRatingU
                   </Label>
                   <AvField id="line-version-rating-comment" type="text" name="comment" />
                 </AvGroup>
+                <AvGroup>
+                  <Label for="lineVersion.id">Line Version</Label>
+                  <AvInput id="line-version-rating-lineVersion" type="select" className="form-control" name="lineVersion.id">
+                    <option value="" key="0" />
+                    {lineVersions
+                      ? lineVersions.map(otherEntity => (
+                          <option value={otherEntity.id} key={otherEntity.id}>
+                            {otherEntity.id}
+                          </option>
+                        ))
+                      : null}
+                  </AvInput>
+                </AvGroup>
                 <Button tag={Link} id="cancel-save" to="/entity/line-version-rating" replace color="info">
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
@@ -117,6 +136,7 @@ export class LineVersionRatingUpdate extends React.Component<ILineVersionRatingU
 }
 
 const mapStateToProps = (storeState: IRootState) => ({
+  lineVersions: storeState.lineVersion.entities,
   lineVersionRatingEntity: storeState.lineVersionRating.entity,
   loading: storeState.lineVersionRating.loading,
   updating: storeState.lineVersionRating.updating,
@@ -124,6 +144,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 });
 
 const mapDispatchToProps = {
+  getLineVersions,
   getEntity,
   updateEntity,
   createEntity,

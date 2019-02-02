@@ -12,10 +12,10 @@
     ],
     "relationships": [
         {
-            "relationshipType": "one-to-many",
             "relationshipName": "lineVersion",
             "otherEntityName": "lineVersion",
-            "otherEntityRelationshipName": "lineVersionRating"
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
         }
     ],
     "changelogDate": "20190201104929",

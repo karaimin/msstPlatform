@@ -8,10 +8,10 @@
     ],
     "relationships": [
         {
-            "relationshipType": "one-to-many",
             "relationshipName": "movie",
             "otherEntityName": "movie",
-            "otherEntityRelationshipName": "subtitle"
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
         },
         {
             "relationshipName": "subtitle",
@@ -26,10 +26,10 @@
             "otherEntityRelationshipName": "subtitle"
         },
         {
-            "relationshipName": "subtitleLine",
+            "relationshipType": "one-to-many",
+            "relationshipName": "lines",
             "otherEntityName": "subtitleLine",
-            "relationshipType": "many-to-one",
-            "otherEntityField": "id"
+            "otherEntityRelationshipName": "subtitle"
         }
     ],
     "changelogDate": "20190201104926",

@@ -1,7 +1,7 @@
 package com.msst.platform.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -33,10 +35,8 @@ public class Movie implements Serializable {
     private String description;
 
     @DBRef
-    @Field("subtitle")
-    @JsonIgnoreProperties("movies")
-    private Subtitle subtitle;
-
+    @Field("subtitles")
+    private Set<Subtitle> subtitles = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -85,17 +85,29 @@ public class Movie implements Serializable {
         this.description = description;
     }
 
-    public Subtitle getSubtitle() {
-        return subtitle;
+    public Set<Subtitle> getSubtitles() {
+        return subtitles;
     }
 
-    public Movie subtitle(Subtitle subtitle) {
-        this.subtitle = subtitle;
+    public Movie subtitles(Set<Subtitle> subtitles) {
+        this.subtitles = subtitles;
         return this;
     }
 
-    public void setSubtitle(Subtitle subtitle) {
-        this.subtitle = subtitle;
+    public Movie addSubtitles(Subtitle subtitle) {
+        this.subtitles.add(subtitle);
+        subtitle.setMovie(this);
+        return this;
+    }
+
+    public Movie removeSubtitles(Subtitle subtitle) {
+        this.subtitles.remove(subtitle);
+        subtitle.setMovie(null);
+        return this;
+    }
+
+    public void setSubtitles(Set<Subtitle> subtitles) {
+        this.subtitles = subtitles;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

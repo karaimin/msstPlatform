@@ -36,8 +36,8 @@ export class Subtitle extends React.Component<ISubtitleProps> {
               <tr>
                 <th>ID</th>
                 <th>Version</th>
+                <th>Movie</th>
                 <th>Subtitle</th>
-                <th>Subtitle Line</th>
                 <th />
               </tr>
             </thead>
@@ -50,10 +50,8 @@ export class Subtitle extends React.Component<ISubtitleProps> {
                     </Button>
                   </td>
                   <td>{subtitle.version}</td>
+                  <td>{subtitle.movie ? <Link to={`movie/${subtitle.movie.id}`}>{subtitle.movie.id}</Link> : ''}</td>
                   <td>{subtitle.subtitle ? <Link to={`subtitle/${subtitle.subtitle.id}`}>{subtitle.subtitle.id}</Link> : ''}</td>
-                  <td>
-                    {subtitle.subtitleLine ? <Link to={`subtitle-line/${subtitle.subtitleLine.id}`}>{subtitle.subtitleLine.id}</Link> : ''}
-                  </td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${subtitle.id}`} color="info" size="sm">

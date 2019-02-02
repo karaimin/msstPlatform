@@ -37,7 +37,7 @@ export class SubtitleLine extends React.Component<ISubtitleLineProps> {
                 <th>ID</th>
                 <th>Start Time</th>
                 <th>End Time</th>
-                <th>Line Version</th>
+                <th>Subtitle</th>
                 <th />
               </tr>
             </thead>
@@ -56,11 +56,7 @@ export class SubtitleLine extends React.Component<ISubtitleLineProps> {
                     <TextFormat type="date" value={subtitleLine.endTime} format={APP_DATE_FORMAT} />
                   </td>
                   <td>
-                    {subtitleLine.lineVersion ? (
-                      <Link to={`line-version/${subtitleLine.lineVersion.id}`}>{subtitleLine.lineVersion.id}</Link>
-                    ) : (
-                      ''
-                    )}
+                    {subtitleLine.subtitle ? <Link to={`subtitle/${subtitleLine.subtitle.id}`}>{subtitleLine.subtitle.id}</Link> : ''}
                   </td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">

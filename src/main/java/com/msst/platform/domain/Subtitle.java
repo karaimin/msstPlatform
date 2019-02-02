@@ -29,7 +29,9 @@ public class Subtitle implements Serializable {
 
     @DBRef
     @Field("movie")
-    private Set<Movie> movies = new HashSet<>();
+    @JsonIgnoreProperties("subtitles")
+    private Movie movie;
+
     @DBRef
     @Field("subtitle")
     @JsonIgnoreProperties("sources")
@@ -39,10 +41,8 @@ public class Subtitle implements Serializable {
     @Field("source")
     private Set<Subtitle> sources = new HashSet<>();
     @DBRef
-    @Field("subtitleLine")
-    @JsonIgnoreProperties("subtitles")
-    private SubtitleLine subtitleLine;
-
+    @Field("lines")
+    private Set<SubtitleLine> lines = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -65,29 +65,17 @@ public class Subtitle implements Serializable {
         this.version = version;
     }
 
-    public Set<Movie> getMovies() {
-        return movies;
+    public Movie getMovie() {
+        return movie;
     }
 
-    public Subtitle movies(Set<Movie> movies) {
-        this.movies = movies;
+    public Subtitle movie(Movie movie) {
+        this.movie = movie;
         return this;
     }
 
-    public Subtitle addMovie(Movie movie) {
-        this.movies.add(movie);
-        movie.setSubtitle(this);
-        return this;
-    }
-
-    public Subtitle removeMovie(Movie movie) {
-        this.movies.remove(movie);
-        movie.setSubtitle(null);
-        return this;
-    }
-
-    public void setMovies(Set<Movie> movies) {
-        this.movies = movies;
+    public void setMovie(Movie movie) {
+        this.movie = movie;
     }
 
     public Subtitle getSubtitle() {
@@ -128,17 +116,29 @@ public class Subtitle implements Serializable {
         this.sources = subtitles;
     }
 
-    public SubtitleLine getSubtitleLine() {
-        return subtitleLine;
+    public Set<SubtitleLine> getLines() {
+        return lines;
     }
 
-    public Subtitle subtitleLine(SubtitleLine subtitleLine) {
-        this.subtitleLine = subtitleLine;
+    public Subtitle lines(Set<SubtitleLine> subtitleLines) {
+        this.lines = subtitleLines;
         return this;
     }
 
-    public void setSubtitleLine(SubtitleLine subtitleLine) {
-        this.subtitleLine = subtitleLine;
+    public Subtitle addLines(SubtitleLine subtitleLine) {
+        this.lines.add(subtitleLine);
+        subtitleLine.setSubtitle(this);
+        return this;
+    }
+
+    public Subtitle removeLines(SubtitleLine subtitleLine) {
+        this.lines.remove(subtitleLine);
+        subtitleLine.setSubtitle(null);
+        return this;
+    }
+
+    public void setLines(Set<SubtitleLine> subtitleLines) {
+        this.lines = subtitleLines;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

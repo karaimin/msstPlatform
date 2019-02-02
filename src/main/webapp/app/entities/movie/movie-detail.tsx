@@ -42,8 +42,6 @@ export class MovieDetail extends React.Component<IMovieDetailProps> {
               <span id="description">Description</span>
             </dt>
             <dd>{movieEntity.description}</dd>
-            <dt>Subtitle</dt>
-            <dd>{movieEntity.subtitle ? movieEntity.subtitle.id : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/movie" replace color="info">
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
