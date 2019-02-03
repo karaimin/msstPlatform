@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * A Movie.
+ * A MovieInfo.
  */
 @Document(collection = "movie")
 public class Movie implements Serializable {
@@ -130,7 +130,7 @@ public class Movie implements Serializable {
 
     @Override
     public String toString() {
-        return "Movie{" +
+        return "MovieInfo{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", duration='" + getDuration() + "'" +

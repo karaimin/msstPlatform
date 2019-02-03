@@ -3,6 +3,7 @@ package com.msst.platform.web.rest;
 import com.msst.platform.MsstPlatformApp;
 
 import com.msst.platform.domain.Movie;
+import com.msst.platform.facade.MsstPlatformFacade;
 import com.msst.platform.repository.MovieRepository;
 import com.msst.platform.service.MovieService;
 import com.msst.platform.web.rest.errors.ExceptionTranslator;
@@ -58,6 +59,9 @@ public class MovieResourceIntTest {
     private MovieService movieService;
 
     @Autowired
+    private MsstPlatformFacade msstPlatformFacade;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -76,7 +80,7 @@ public class MovieResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final MovieResource movieResource = new MovieResource(movieService);
+        final MovieResource movieResource = new MovieResource(movieService, msstPlatformFacade);
         this.restMovieMockMvc = MockMvcBuilders.standaloneSetup(movieResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -109,13 +113,13 @@ public class MovieResourceIntTest {
     public void createMovie() throws Exception {
         int databaseSizeBeforeCreate = movieRepository.findAll().size();
 
-        // Create the Movie
+        // Create the MovieInfo
         restMovieMockMvc.perform(post("/api/movies")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(movie)))
             .andExpect(status().isCreated());
 
-        // Validate the Movie in the database
+        // Validate the MovieInfo in the database
         List<Movie> movieList = movieRepository.findAll();
         assertThat(movieList).hasSize(databaseSizeBeforeCreate + 1);
         Movie testMovie = movieList.get(movieList.size() - 1);
@@ -128,7 +132,7 @@ public class MovieResourceIntTest {
     public void createMovieWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = movieRepository.findAll().size();
 
-        // Create the Movie with an existing ID
+        // Create the MovieInfo with an existing ID
         movie.setId("existing_id");
 
         // An entity with an existing ID cannot be created, so this API call must fail
@@ -137,7 +141,7 @@ public class MovieResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(movie)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Movie in the database
+        // Validate the MovieInfo in the database
         List<Movie> movieList = movieRepository.findAll();
         assertThat(movieList).hasSize(databaseSizeBeforeCreate);
     }
@@ -198,7 +202,7 @@ public class MovieResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(updatedMovie)))
             .andExpect(status().isOk());
 
-        // Validate the Movie in the database
+        // Validate the MovieInfo in the database
         List<Movie> movieList = movieRepository.findAll();
         assertThat(movieList).hasSize(databaseSizeBeforeUpdate);
         Movie testMovie = movieList.get(movieList.size() - 1);
@@ -211,7 +215,7 @@ public class MovieResourceIntTest {
     public void updateNonExistingMovie() throws Exception {
         int databaseSizeBeforeUpdate = movieRepository.findAll().size();
 
-        // Create the Movie
+        // Create the MovieInfo
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restMovieMockMvc.perform(put("/api/movies")
@@ -219,7 +223,7 @@ public class MovieResourceIntTest {
             .content(TestUtil.convertObjectToJsonBytes(movie)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Movie in the database
+        // Validate the MovieInfo in the database
         List<Movie> movieList = movieRepository.findAll();
         assertThat(movieList).hasSize(databaseSizeBeforeUpdate);
     }

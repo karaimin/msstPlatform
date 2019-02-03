@@ -40,3 +40,12 @@ export const Home = props => (
     </NavLink>
   </NavItem>
 );
+
+export const MovieInfoItem = props => (
+  <NavItem>
+    <NavLink tag={Link} to="/movieInfo">
+      <FontAwesomeIcon icon="asterisk" fixedWidth />
+      &nbsp; Movie Info
+    </NavLink>
+  </NavItem>
+);

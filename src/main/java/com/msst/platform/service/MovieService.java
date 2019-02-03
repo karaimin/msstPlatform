@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Service Interface for managing Movie.
+ * Service Interface for managing MovieInfo.
  */
 public interface MovieService {
 

@@ -12,7 +12,10 @@ import com.msst.platform.domain.file.locator.google.query.AttributeQuery;
 import com.msst.platform.domain.file.locator.google.query.GoogleDriveFileQuery;
 import com.msst.platform.domain.file.locator.google.query.NameQueryFactory;
 import com.msst.platform.domain.file.locator.google.query.ParentAttributeQueryFactory;
+import com.msst.platform.web.rest.MovieResource;
 import com.msst.platform.web.rest.errors.InternalServerErrorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,10 +27,12 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("Google")
+@Service("google")
 public class GoogleDriverLocator implements SubtitleLocator {
   private static final String ROOT_DIRECTORY_NAME = "Subtitles";
   private static final String ERROR_MESSAGE = "Something went wrong when fetching subtitles form server";
+
+  private final Logger log = LoggerFactory.getLogger(MovieResource.class);
 
   private String rootDirectoryId;
 
@@ -64,6 +69,7 @@ public class GoogleDriverLocator implements SubtitleLocator {
       return getSubtitles(request);
 
     } catch (GoogleDriveLocatorException | IOException | GeneralSecurityException e) {
+      log.debug("Error getting subtitles", e);
       throw new InternalServerErrorException(ERROR_MESSAGE);
     }
   }
