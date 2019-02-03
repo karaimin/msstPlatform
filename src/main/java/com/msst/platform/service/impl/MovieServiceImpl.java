@@ -1,18 +1,18 @@
 package com.msst.platform.service.impl;
 
-import com.msst.platform.service.MovieService;
 import com.msst.platform.domain.Movie;
+import com.msst.platform.domain.Subtitle;
 import com.msst.platform.repository.MovieRepository;
+import com.msst.platform.service.MovieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service Implementation for managing Movie.
+ * Service Implementation for managing MovieInfo.
  */
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -33,7 +33,7 @@ public class MovieServiceImpl implements MovieService {
      */
     @Override
     public Movie save(Movie movie) {
-        log.debug("Request to save Movie : {}", movie);
+        log.debug("Request to save MovieInfo : {}", movie);
         return movieRepository.save(movie);
     }
 
@@ -57,7 +57,7 @@ public class MovieServiceImpl implements MovieService {
      */
     @Override
     public Optional<Movie> findOne(String id) {
-        log.debug("Request to get Movie : {}", id);
+        log.debug("Request to get MovieInfo : {}", id);
         return movieRepository.findById(id);
     }
 
@@ -68,6 +68,7 @@ public class MovieServiceImpl implements MovieService {
      */
     @Override
     public void delete(String id) {
-        log.debug("Request to delete Movie : {}", id);        movieRepository.deleteById(id);
+        log.debug("Request to delete MovieInfo : {}", id);
+        movieRepository.deleteById(id);
     }
 }

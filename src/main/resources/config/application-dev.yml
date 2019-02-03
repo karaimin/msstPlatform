@@ -114,6 +114,8 @@ jhipster:
             host: localhost
             port: 5000
             queue-size: 512
+subtitle:
+  provider: google
 
 # ===================================================================
 # Application specific properties

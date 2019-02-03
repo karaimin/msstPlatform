@@ -26,6 +26,9 @@ public class SubtitleLine implements Serializable {
     @Id
     private String id;
 
+    @Field("sequence_number")
+    private int sequenceNumber;
+
     @Field("start_time")
     private Duration startTime;
 
@@ -107,6 +110,14 @@ public class SubtitleLine implements Serializable {
         this.versions.remove(lineVersion);
         lineVersion.setSubtitleLine(null);
         return this;
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 
     public void setVersions(Set<LineVersion> lineVersions) {

@@ -73,7 +73,7 @@ export class Home extends React.Component<IHomeProp> {
             </li>
             <li>
               <a href="https://twitter.com/java_hipster" target="_blank" rel="noopener noreferrer">
-                follow @java_hipster on Twitter
+                follow @java_hipster on Twitter eeeeeee
               </a>
             </li>
           </ul>

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 
 /**
- * Spring Data MongoDB repository for the Movie entity.
+ * Spring Data MongoDB repository for the MovieInfo entity.
  */
 @SuppressWarnings("unused")
 @Repository

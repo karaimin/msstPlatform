@@ -116,6 +116,8 @@ jhipster:
             port: 5000
             queue-size: 512
 
+subtitle:
+  provider: google
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

@@ -1,15 +1,21 @@
 package com.msst.platform.service.impl;
 
+import com.msst.platform.domain.file.locator.SubtitleContent;
+import com.msst.platform.domain.file.locator.SubtitleLocator;
 import com.msst.platform.service.SubtitleService;
 import com.msst.platform.domain.Subtitle;
 import com.msst.platform.repository.SubtitleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing Subtitle.
@@ -21,8 +27,14 @@ public class SubtitleServiceImpl implements SubtitleService {
 
     private final SubtitleRepository subtitleRepository;
 
-    public SubtitleServiceImpl(SubtitleRepository subtitleRepository) {
+    private SubtitleLocator fileLocator;
+
+    public SubtitleServiceImpl(
+        @Autowired SubtitleRepository subtitleRepository,
+        @Autowired @Qualifier("fileLocatorAlias") SubtitleLocator subtitleLocator
+    ) {
         this.subtitleRepository = subtitleRepository;
+        this.fileLocator = subtitleLocator;
     }
 
     /**
@@ -68,6 +80,44 @@ public class SubtitleServiceImpl implements SubtitleService {
      */
     @Override
     public void delete(String id) {
-        log.debug("Request to delete Subtitle : {}", id);        subtitleRepository.deleteById(id);
+        log.debug("Request to delete Subtitle : {}", id);
+        subtitleRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Subtitle> getTranslatedSubtitles() {
+        List<SubtitleContent> subtitleContents = fileLocator.getAllSubtitles();
+        return convertSubtitleContent(subtitleContents);
+    }
+
+    @Override
+    public List<Subtitle> getTranslatedSubtitles(String movieName){
+        List<SubtitleContent> subtitleContents = fileLocator.getSubtitlesByMovieName(movieName);
+        return convertSubtitleContent(subtitleContents);
+    }
+
+    @Override
+    public Subtitle getTranslatedSubtitle(String providerId){
+        SubtitleContent subtitleContent = fileLocator.getSubtitleInfoById(providerId);
+        return convertSubtitleContent(subtitleContent);
+    }
+
+    @Override
+    public Subtitle downloadSubtitle(String providerId){
+        SubtitleContent subtitleContent = fileLocator.downloadSubtitleFile(providerId);
+        return convertSubtitleContent(subtitleContent);
+    }
+
+    private Subtitle convertSubtitleContent(SubtitleContent content){
+        SubtitleParser subtitleParser = new SubtitleParser();
+        return subtitleParser.parse(content);
+    }
+
+    private List<Subtitle> convertSubtitleContent(Collection<SubtitleContent> contents){
+        // @formatter:off
+    return contents.stream()
+        .map(this::convertSubtitleContent)
+        .collect(Collectors.toList());
+    // @formatter:on
     }
 }

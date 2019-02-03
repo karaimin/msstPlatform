@@ -4,6 +4,7 @@ package com.msst.platform.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -44,6 +45,13 @@ public class Subtitle implements Serializable {
     @Field("lines")
     private Set<SubtitleLine> lines = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+    @Field("language")
+    private Language language;
+
+    @Transient
+    private String providerId;
+
     public String getId() {
         return id;
     }
@@ -140,6 +148,23 @@ public class Subtitle implements Serializable {
     public void setLines(Set<SubtitleLine> subtitleLines) {
         this.lines = subtitleLines;
     }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
