@@ -24,11 +24,11 @@ const initialState = {
   updateSuccess: false
 };
 
-export type MovieState = Readonly<typeof initialState>;
+export type MovieInfoState = Readonly<typeof initialState>;
 
 // Reducer
 
-export default (state: MovieState = initialState, action): MovieState => {
+export default (state: MovieInfoState = initialState, action): MovieInfoState => {
   switch (action.type) {
     case REQUEST(ACTION_TYPES.FETCH_MOVIE_LIST):
     case REQUEST(ACTION_TYPES.FETCH_MOVIE):
@@ -95,49 +95,16 @@ export default (state: MovieState = initialState, action): MovieState => {
   }
 };
 
-const apiUrl = 'api/movieInfos';
+const apiUrl = 'api/movies/info';
 
 // Actions
 
-export const getEntities: ICrudGetAllAction<IMovieInfo> = (page, size, sort) => ({
-  type: ACTION_TYPES.FETCH_MOVIE_LIST,
-  payload: axios.get<IMovieInfo>(`${apiUrl}?cacheBuster=${new Date().getTime()}`)
-});
-
-export const getEntity: ICrudGetAction<IMovieInfo> = id => {
+export const getMovieInfo: ICrudGetAction<IMovieInfo> = id => {
   const requestUrl = `${apiUrl}/${id}`;
   return {
     type: ACTION_TYPES.FETCH_MOVIE,
     payload: axios.get<IMovieInfo>(requestUrl)
   };
-};
-
-export const createEntity: ICrudPutAction<IMovieInfo> = entity => async dispatch => {
-  const result = await dispatch({
-    type: ACTION_TYPES.CREATE_MOVIE,
-    payload: axios.post(apiUrl, cleanEntity(entity))
-  });
-  dispatch(getEntities());
-  return result;
-};
-
-export const updateEntity: ICrudPutAction<IMovieInfo> = entity => async dispatch => {
-  const result = await dispatch({
-    type: ACTION_TYPES.UPDATE_MOVIE,
-    payload: axios.put(apiUrl, cleanEntity(entity))
-  });
-  dispatch(getEntities());
-  return result;
-};
-
-export const deleteEntity: ICrudDeleteAction<IMovieInfo> = id => async dispatch => {
-  const requestUrl = `${apiUrl}/${id}`;
-  const result = await dispatch({
-    type: ACTION_TYPES.DELETE_MOVIE,
-    payload: axios.delete(requestUrl)
-  });
-  dispatch(getEntities());
-  return result;
 };
 
 export const reset = () => ({
