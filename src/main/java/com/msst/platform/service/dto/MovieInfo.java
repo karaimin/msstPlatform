@@ -1,19 +1,23 @@
 package com.msst.platform.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.msst.platform.domain.Movie;
 import com.msst.platform.domain.Subtitle;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 
 public class MovieInfo {
-    private String resourceId;
+    private String id;
     private String name;
     private Duration duration;
     private String description;
 
     private MovieInfo(Builder builder) {
-        this.resourceId = builder.resourceId;
+        this.id = builder.resourceId;
         this.name = builder.name;
         this.duration = builder.duration;
         this.description = builder.description;
@@ -31,8 +35,8 @@ public class MovieInfo {
         return new Builder();
     }
 
-    public String getResourceId() {
-        return resourceId;
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -72,7 +76,7 @@ public class MovieInfo {
         }
 
         private Builder(MovieInfo movieInfo) {
-            this.resourceId = movieInfo.resourceId;
+            this.resourceId = movieInfo.id;
             this.name = movieInfo.name;
             this.duration = movieInfo.duration;
             this.description = movieInfo.description;
@@ -113,4 +117,10 @@ public class MovieInfo {
             return new MovieInfo(this);
         }
     }
+
+  public static void main(String[] args) throws JsonProcessingException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    MovieInfo movieInfo = MovieInfo.builder().setDuration(Duration.of(5, ChronoUnit.SECONDS)).build();
+    System.out.println(objectMapper.writeValueAsString(movieInfo));
+  }
 }

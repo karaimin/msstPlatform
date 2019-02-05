@@ -5,6 +5,7 @@ import { ISubtitleLine } from 'app/shared/model/subtitle-line.model';
 export interface ISubtitle {
   id?: string;
   version?: string;
+  language?: string;
   movie?: IMovie;
   subtitle?: ISubtitle;
   sources?: ISubtitle[];

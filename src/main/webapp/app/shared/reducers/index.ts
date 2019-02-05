@@ -31,6 +31,10 @@ import lineVersion, {
 import lineVersionRating, {
   LineVersionRatingState
 } from 'app/entities/line-version-rating/line-version-rating.reducer';
+// prettier-ignore
+import movieInfo, {
+  MovieInfoState
+} from 'app/entities/info/movie-info.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -44,6 +48,7 @@ export interface IRootState {
   readonly password: PasswordState;
   readonly settings: SettingsState;
   readonly movie: MovieState;
+  readonly movieInfo: MovieInfoState;
   readonly subtitle: SubtitleState;
   readonly subtitleLine: SubtitleLineState;
   readonly lineVersion: LineVersionState;
@@ -63,6 +68,7 @@ const rootReducer = combineReducers<IRootState>({
   password,
   settings,
   movie,
+  movieInfo,
   subtitle,
   subtitleLine,
   lineVersion,

@@ -84,16 +84,16 @@ public class MovieResource {
      * @return the ResponseEntity with status 200 (OK) and the list of movies in body
      */
     @GetMapping("/movies")
-    public List<Movie> getAllMovies() {
+    public ResponseEntity<List<Movie>> getAllMovies() {
         log.debug("REST request to get all Movies");
-        return movieService.findAll();
+        return ResponseEntity.ok(movieService.findAll());
     }
 
-    @GetMapping("/movieInfos")
-    public List<MovieInfo> getAllMovieInfos() {
-      log.debug("REST request to get all MovieInfo's info");
-      return platformFacade.getAllMovieInfos();
-    }
+  @GetMapping("/movies/info/{id}")
+  public ResponseEntity<MovieInfo> getAllMovieInfos(@PathVariable String id) {
+    log.debug("REST request to get basic info for movie with id: {}", id);
+    return ResponseUtil.wrapOrNotFound(platformFacade.getMovieInfo(id));
+  }
 
     /**
      * GET  /movies/:id : get the "id" movie.
