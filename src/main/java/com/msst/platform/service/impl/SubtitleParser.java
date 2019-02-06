@@ -11,10 +11,7 @@ import com.msst.platform.web.rest.errors.InternalServerErrorException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SubtitleParser {
 
@@ -66,6 +63,7 @@ public class SubtitleParser {
 
   private Set<SubtitleLine> getSubtitleLines(String content)  {
     Set<SubtitleLine> subtitleLines = new HashSet<>();
+    String lineVersion = UUID.randomUUID().toString();
 
     try (BufferedReader fileContentReader = new BufferedReader(new StringReader(content))) {
       String line;
@@ -75,7 +73,7 @@ public class SubtitleParser {
         String normalizedLine = line.trim();
 
         if (normalizedLine.isEmpty()) {
-          subtitleLines.add(lineParser.parse(lineChunks));
+          subtitleLines.add(lineParser.parse(lineChunks, lineVersion));
           lineChunks.clear();
           continue;
         }

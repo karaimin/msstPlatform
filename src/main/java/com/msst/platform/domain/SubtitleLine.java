@@ -1,19 +1,16 @@
 package com.msst.platform.domain;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A SubtitleLine.
@@ -40,7 +37,6 @@ public class SubtitleLine implements Serializable {
     @JsonIgnoreProperties("lines")
     private Subtitle subtitle;
 
-    @DBRef
     @Field("versions")
     private Set<LineVersion> versions = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -102,13 +98,11 @@ public class SubtitleLine implements Serializable {
 
     public SubtitleLine addVersions(LineVersion lineVersion) {
         this.versions.add(lineVersion);
-        lineVersion.setSubtitleLine(this);
         return this;
     }
 
     public SubtitleLine removeVersions(LineVersion lineVersion) {
         this.versions.remove(lineVersion);
-        lineVersion.setSubtitleLine(null);
         return this;
     }
 

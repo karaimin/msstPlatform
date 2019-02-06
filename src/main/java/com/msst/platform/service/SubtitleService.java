@@ -1,6 +1,8 @@
 package com.msst.platform.service;
 
+import com.msst.platform.domain.Movie;
 import com.msst.platform.domain.Subtitle;
+import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +15,12 @@ public interface SubtitleService {
     /**
      * Save a subtitle.
      *
-     * @param subtitle the entity to save
+     * @param subtitle the entity to create
      * @return the persisted entity
      */
-    Subtitle save(Subtitle subtitle);
+    Subtitle create(Subtitle subtitle);
+
+    Subtitle update(Subtitle subtitle);
 
     /**
      * Get all the subtitles.
@@ -48,4 +52,6 @@ public interface SubtitleService {
    Subtitle getTranslatedSubtitle(String providerId);
 
    Subtitle downloadSubtitle(String providerId);
+
+   Subtitle getTranslationSourceSubtitle(StartTranslateSubtitleTranslateInfo subtitleInfo, String movieId);
 }

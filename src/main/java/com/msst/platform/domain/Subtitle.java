@@ -1,7 +1,6 @@
 package com.msst.platform.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -34,13 +33,14 @@ public class Subtitle implements Serializable {
     private Movie movie;
 
     @DBRef
-    @Field("subtitle")
-    @JsonIgnoreProperties("sources")
-    private Subtitle subtitle;
+    @Field("parent")
+    @JsonIgnoreProperties("children")
+    private Subtitle parent;
 
     @DBRef
-    @Field("source")
-    private Set<Subtitle> sources = new HashSet<>();
+    @Field("children")
+    private Set<Subtitle> children = new HashSet<>();
+
     @DBRef
     @Field("lines")
     private Set<SubtitleLine> lines = new HashSet<>();
@@ -86,42 +86,42 @@ public class Subtitle implements Serializable {
         this.movie = movie;
     }
 
-    public Subtitle getSubtitle() {
-        return subtitle;
+    public Subtitle getParent() {
+        return parent;
     }
 
-    public Subtitle subtitle(Subtitle subtitle) {
-        this.subtitle = subtitle;
+    public Subtitle parent(Subtitle subtitle) {
+        this.parent = subtitle;
         return this;
     }
 
-    public void setSubtitle(Subtitle subtitle) {
-        this.subtitle = subtitle;
+    public void setParent(Subtitle parent) {
+        this.parent = parent;
     }
 
-    public Set<Subtitle> getSources() {
-        return sources;
+    public Set<Subtitle> getChildren() {
+        return children;
     }
 
     public Subtitle sources(Set<Subtitle> subtitles) {
-        this.sources = subtitles;
+        this.children = subtitles;
         return this;
     }
 
     public Subtitle addSource(Subtitle subtitle) {
-        this.sources.add(subtitle);
-        subtitle.setSubtitle(this);
+        this.children.add(subtitle);
+        subtitle.setParent(this);
         return this;
     }
 
     public Subtitle removeSource(Subtitle subtitle) {
-        this.sources.remove(subtitle);
-        subtitle.setSubtitle(null);
+        this.children.remove(subtitle);
+        subtitle.setParent(null);
         return this;
     }
 
-    public void setSources(Set<Subtitle> subtitles) {
-        this.sources = subtitles;
+    public void setChildren(Set<Subtitle> subtitles) {
+        this.children = subtitles;
     }
 
     public Set<SubtitleLine> getLines() {
@@ -163,6 +163,11 @@ public class Subtitle implements Serializable {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public Subtitle language(Language language) {
+      this.language = language;
+      return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove

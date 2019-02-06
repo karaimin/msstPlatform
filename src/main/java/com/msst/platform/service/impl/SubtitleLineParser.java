@@ -2,11 +2,12 @@ package com.msst.platform.service.impl;
 
 import com.msst.platform.domain.LineVersion;
 import com.msst.platform.domain.SubtitleLine;
-import org.mapstruct.ap.internal.util.Collections;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 public class SubtitleLineParser {
     private static final int LINENUMBER_INDEX = 0;
@@ -26,12 +27,12 @@ public class SubtitleLineParser {
 
     private static final String LINE_SEPARATOR = System.lineSeparator();
 
-    public SubtitleLine parse(List<String> orderedLineChunk) {
+    public SubtitleLine parse(List<String> orderedLineChunk, String version) {
         SubtitleLine subtitleLine = new SubtitleLine();
 
         parseLineNumber(orderedLineChunk, subtitleLine);
         parseTime(orderedLineChunk, subtitleLine);
-        parseText(orderedLineChunk, subtitleLine);
+        parseText(orderedLineChunk, subtitleLine, version);
 
         return subtitleLine;
     }
@@ -74,13 +75,12 @@ public class SubtitleLineParser {
     // @formatter:on
     }
 
-    private void parseText(List<String> orderedLineChunk, SubtitleLine subtitleLineBuilder) {
+    private void parseText(List<String> orderedLineChunk, SubtitleLine subtitleLineBuilder, String version) {
         List<String> textChunks = orderedLineChunk.subList(TEXT_INDEX, orderedLineChunk.size());
 
         String text = String.join(LINE_SEPARATOR, textChunks);
-        LineVersion lineVersion = new LineVersion();
-        lineVersion.setText(text);
+        LineVersion lineVersion = new LineVersion().text(text).version(version);
 
-        subtitleLineBuilder.setVersions(new HashSet<>(Collections.asSet(lineVersion)));
+        subtitleLineBuilder.setVersions(new HashSet<>(Collections.singleton(lineVersion)));
     }
 }
