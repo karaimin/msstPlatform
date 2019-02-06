@@ -1,28 +1,19 @@
 package com.msst.platform.domain;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A LineVersion.
  */
-@Document(collection = "line_version")
 public class LineVersion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    @Id
-    private String id;
 
     @Field("version")
     private String version;
@@ -31,21 +22,9 @@ public class LineVersion implements Serializable {
     private String text;
 
     @DBRef
-    @Field("subtitleLine")
-    @JsonIgnoreProperties("versions")
-    private SubtitleLine subtitleLine;
-
-    @DBRef
     @Field("ratings")
     private Set<LineVersionRating> ratings = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getVersion() {
         return version;
@@ -70,20 +49,7 @@ public class LineVersion implements Serializable {
     }
 
     public void setText(String text) {
-        this.text = text;
-    }
-
-    public SubtitleLine getSubtitleLine() {
-        return subtitleLine;
-    }
-
-    public LineVersion subtitleLine(SubtitleLine subtitleLine) {
-        this.subtitleLine = subtitleLine;
-        return this;
-    }
-
-    public void setSubtitleLine(SubtitleLine subtitleLine) {
-        this.subtitleLine = subtitleLine;
+      this.text = text;
     }
 
     public Set<LineVersionRating> getRatings() {
@@ -97,13 +63,11 @@ public class LineVersion implements Serializable {
 
     public LineVersion addRatings(LineVersionRating lineVersionRating) {
         this.ratings.add(lineVersionRating);
-        lineVersionRating.setLineVersion(this);
         return this;
     }
 
     public LineVersion removeRatings(LineVersionRating lineVersionRating) {
         this.ratings.remove(lineVersionRating);
-        lineVersionRating.setLineVersion(null);
         return this;
     }
 
@@ -121,22 +85,21 @@ public class LineVersion implements Serializable {
             return false;
         }
         LineVersion lineVersion = (LineVersion) o;
-        if (lineVersion.getId() == null || getId() == null) {
+        if (lineVersion.getVersion() == null || getVersion() == null) {
             return false;
         }
-        return Objects.equals(getId(), lineVersion.getId());
+        return Objects.equals(getVersion(), lineVersion.getVersion());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return Objects.hashCode(getVersion());
     }
 
     @Override
     public String toString() {
         return "LineVersion{" +
-            "id=" + getId() +
-            ", version='" + getVersion() + "'" +
+            "version='" + getVersion() + "'" +
             ", text='" + getText() + "'" +
             "}";
     }

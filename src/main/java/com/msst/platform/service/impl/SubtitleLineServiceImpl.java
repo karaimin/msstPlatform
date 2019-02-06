@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +69,12 @@ public class SubtitleLineServiceImpl implements SubtitleLineService {
      */
     @Override
     public void delete(String id) {
-        log.debug("Request to delete SubtitleLine : {}", id);        subtitleLineRepository.deleteById(id);
+        log.debug("Request to delete SubtitleLine : {}", id);
+        subtitleLineRepository.deleteById(id);
     }
+
+  @Override
+  public Collection<SubtitleLine> creatBulkWithSameVersion(Collection<SubtitleLine> subtitleLines) {
+      return subtitleLineRepository.saveAll(subtitleLines);
+  }
 }

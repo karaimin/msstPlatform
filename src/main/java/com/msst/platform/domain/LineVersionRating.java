@@ -1,11 +1,9 @@
 package com.msst.platform.domain;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -17,7 +15,7 @@ import java.util.Objects;
 public class LineVersionRating implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     private String id;
 
@@ -28,9 +26,8 @@ public class LineVersionRating implements Serializable {
     private String comment;
 
     @DBRef
-    @Field("lineVersion")
-    @JsonIgnoreProperties("ratings")
-    private LineVersion lineVersion;
+    @Field("owner")
+    private User owner;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
@@ -67,19 +64,20 @@ public class LineVersionRating implements Serializable {
         this.comment = comment;
     }
 
-    public LineVersion getLineVersion() {
-        return lineVersion;
+    public User getOwner() {
+     return owner;
     }
 
-    public LineVersionRating lineVersion(LineVersion lineVersion) {
-        this.lineVersion = lineVersion;
-        return this;
+    public void setOwner(User owner) {
+      this.owner = owner;
     }
 
-    public void setLineVersion(LineVersion lineVersion) {
-        this.lineVersion = lineVersion;
+    public LineVersionRating owner(User owner) {
+      this.owner = owner;
+      return this;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+
+  // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {

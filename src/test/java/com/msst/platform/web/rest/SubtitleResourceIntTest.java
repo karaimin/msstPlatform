@@ -3,6 +3,7 @@ package com.msst.platform.web.rest;
 import com.msst.platform.MsstPlatformApp;
 
 import com.msst.platform.domain.Subtitle;
+import com.msst.platform.facade.SubtitleFacade;
 import com.msst.platform.repository.SubtitleRepository;
 import com.msst.platform.service.SubtitleService;
 import com.msst.platform.web.rest.errors.ExceptionTranslator;
@@ -49,6 +50,9 @@ public class SubtitleResourceIntTest {
     private SubtitleService subtitleService;
 
     @Autowired
+    private SubtitleFacade subtitleFacade;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -67,7 +71,7 @@ public class SubtitleResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final SubtitleResource subtitleResource = new SubtitleResource(subtitleService);
+        final SubtitleResource subtitleResource = new SubtitleResource(subtitleService, subtitleFacade);
         this.restSubtitleMockMvc = MockMvcBuilders.standaloneSetup(subtitleResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -165,7 +169,7 @@ public class SubtitleResourceIntTest {
     @Test
     public void updateSubtitle() throws Exception {
         // Initialize the database
-        subtitleService.save(subtitle);
+        subtitleService.create(subtitle);
 
         int databaseSizeBeforeUpdate = subtitleRepository.findAll().size();
 
@@ -206,7 +210,7 @@ public class SubtitleResourceIntTest {
     @Test
     public void deleteSubtitle() throws Exception {
         // Initialize the database
-        subtitleService.save(subtitle);
+        subtitleService.create(subtitle);
 
         int databaseSizeBeforeDelete = subtitleRepository.findAll().size();
 

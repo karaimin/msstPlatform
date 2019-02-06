@@ -1,6 +1,9 @@
 package com.msst.platform.web.rest;
 import com.msst.platform.domain.Subtitle;
+import com.msst.platform.facade.MsstPlatformFacade;
+import com.msst.platform.facade.SubtitleFacade;
 import com.msst.platform.service.SubtitleService;
+import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
 import com.msst.platform.web.rest.errors.BadRequestAlertException;
 import com.msst.platform.web.rest.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -27,9 +30,11 @@ public class SubtitleResource {
     private static final String ENTITY_NAME = "subtitle";
 
     private final SubtitleService subtitleService;
+    private final SubtitleFacade subtitleFacade;
 
-    public SubtitleResource(SubtitleService subtitleService) {
+    public SubtitleResource(SubtitleService subtitleService, SubtitleFacade subtitleFacade) {
         this.subtitleService = subtitleService;
+        this.subtitleFacade = subtitleFacade;
     }
 
     /**
@@ -41,11 +46,11 @@ public class SubtitleResource {
      */
     @PostMapping("/subtitles")
     public ResponseEntity<Subtitle> createSubtitle(@RequestBody Subtitle subtitle) throws URISyntaxException {
-        log.debug("REST request to save Subtitle : {}", subtitle);
+        log.debug("REST request to create Subtitle : {}", subtitle);
         if (subtitle.getId() != null) {
             throw new BadRequestAlertException("A new subtitle cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Subtitle result = subtitleService.save(subtitle);
+        Subtitle result = subtitleService.create(subtitle);
         return ResponseEntity.created(new URI("/api/subtitles/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -66,11 +71,20 @@ public class SubtitleResource {
         if (subtitle.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Subtitle result = subtitleService.save(subtitle);
+        Subtitle result = subtitleService.create(subtitle);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, subtitle.getId().toString()))
             .body(result);
     }
+
+  @PostMapping("/subtitles/translated/{id}/new")
+  public ResponseEntity<Subtitle> startTranslate(@PathVariable String id, @RequestBody StartTranslateSubtitleTranslateInfo subtitleTranslateInfo) {
+    log.debug("REST request to start translating Subtitle with version : {} and language {}"
+      , subtitleTranslateInfo.getParentVersion(), subtitleTranslateInfo.getParentLanguage());
+
+    subtitleFacade.startTranslateSubtitle(subtitleTranslateInfo, id);
+    return ResponseEntity.noContent().build();
+  }
 
     /**
      * GET  /subtitles : get all the subtitles.
