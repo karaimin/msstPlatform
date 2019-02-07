@@ -1,5 +1,6 @@
 package com.msst.platform.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jhipster.config.JHipsterConstants;
 import io.github.jhipster.config.JHipsterProperties;
 import io.github.jhipster.web.filter.CachingHttpHeadersFilter;
@@ -13,11 +14,17 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
+import org.springframework.web.server.WebExceptionHandler;
+import org.zalando.problem.spring.webflux.advice.ProblemExceptionHandler;
+import org.zalando.problem.spring.webflux.advice.ProblemHandling;
 
 import javax.servlet.*;
 import java.io.File;
@@ -32,7 +39,7 @@ import static java.net.URLDecoder.decode;
  * Configuration of web application with Servlet 3.0 APIs.
  */
 @Configuration
-public class WebConfigurer implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
+public class WebConfigurer implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory>, WebFluxConfigurer {
 
     private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
@@ -44,6 +51,12 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
 
         this.env = env;
         this.jHipsterProperties = jHipsterProperties;
+    }
+
+    @Override
+    public void configureArgumentResolvers(ArgumentResolverConfigurer configurer) {
+        configurer.addCustomResolver(new ReactiveSortHandlerMethodArgumentResolver(),
+            new ReactivePageableHandlerMethodArgumentResolver());
     }
 
     @Override
@@ -129,7 +142,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
     /**
      * Initializes the caching HTTP Headers Filter.
      */
-    private void initCachingHttpHeadersFilter(javax.servlet.ServletContext servletContext,
+    private void initCachingHttpHeadersFilter(ServletContext servletContext,
                                               EnumSet<DispatcherType> disps) {
         log.debug("Registering Caching HTTP Headers Filter");
         FilterRegistration.Dynamic cachingHttpHeadersFilter =
@@ -143,7 +156,7 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsWebFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = jHipsterProperties.getCors();
         if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
@@ -152,7 +165,13 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
             source.registerCorsConfiguration("/management/**", config);
             source.registerCorsConfiguration("/v2/api-docs", config);
         }
-        return new CorsFilter(source);
+        return new CorsWebFilter(source);
+    }
+
+    @Bean
+    @Order(-2) // The handler must have precedence over WebFluxResponseStatusExceptionHandler and Spring Boot's ErrorWebExceptionHandler
+    public WebExceptionHandler problemExceptionHandler(ObjectMapper mapper, ProblemHandling problemHandling) {
+        return new ProblemExceptionHandler(mapper, problemHandling);
     }
 
 }

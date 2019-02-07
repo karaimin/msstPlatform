@@ -1,10 +1,9 @@
 package com.msst.platform.security;
 
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 /**
  * Utility class for Spring Security.
@@ -19,9 +18,9 @@ public final class SecurityUtils {
      *
      * @return the login of the current user
      */
-    public static Optional<String> getCurrentUserLogin() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
+    public static Mono<String> getCurrentUserLogin() {
+        return ReactiveSecurityContextHolder.getContext()
+            .map(SecurityContext::getAuthentication)
             .map(authentication -> {
                 if (authentication.getPrincipal() instanceof UserDetails) {
                     UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
@@ -38,9 +37,9 @@ public final class SecurityUtils {
      *
      * @return the JWT of the current user
      */
-    public static Optional<String> getCurrentUserJWT() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
+    public static Mono<String> getCurrentUserJWT() {
+        return ReactiveSecurityContextHolder.getContext()
+            .map(SecurityContext::getAuthentication)
             .filter(authentication -> authentication.getCredentials() instanceof String)
             .map(authentication -> (String) authentication.getCredentials());
     }
@@ -50,12 +49,11 @@ public final class SecurityUtils {
      *
      * @return true if the user is authenticated, false otherwise
      */
-    public static boolean isAuthenticated() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
+    public static Mono<Boolean> isAuthenticated() {
+        return ReactiveSecurityContextHolder.getContext()
+            .map(SecurityContext::getAuthentication)
             .map(authentication -> authentication.getAuthorities().stream()
-                .noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(AuthoritiesConstants.ANONYMOUS)))
-            .orElse(false);
+                .noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(AuthoritiesConstants.ANONYMOUS)));
     }
 
     /**
@@ -66,11 +64,10 @@ public final class SecurityUtils {
      * @param authority the authority to check
      * @return true if the current user has the authority, false otherwise
      */
-    public static boolean isCurrentUserInRole(String authority) {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
+    public static Mono<Boolean> isCurrentUserInRole(String authority) {
+        return ReactiveSecurityContextHolder.getContext()
+            .map(SecurityContext::getAuthentication)
             .map(authentication -> authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)))
-            .orElse(false);
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)));
     }
 }

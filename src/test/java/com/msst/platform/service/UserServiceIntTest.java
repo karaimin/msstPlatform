@@ -3,7 +3,7 @@ package com.msst.platform.service;
 import com.msst.platform.MsstPlatformApp;
 import com.msst.platform.config.Constants;
 import com.msst.platform.domain.User;
-import com.msst.platform.repository.UserRepository;
+import com.msst.platform.repository.reactive.UserRepository;
 import com.msst.platform.service.dto.UserDTO;
 import com.msst.platform.service.util.RandomUtil;
 
@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -43,7 +42,7 @@ public class UserServiceIntTest {
 
     @Before
     public void init() {
-        userRepository.deleteAll();
+        userRepository.deleteAll().block();
         user = new User();
         user.setLogin("johndoe");
         user.setPassword(RandomStringUtils.random(60));
@@ -57,11 +56,11 @@ public class UserServiceIntTest {
 
     @Test
     public void assertThatUserMustExistToResetPassword() {
-        userRepository.save(user);
-        Optional<User> maybeUser = userService.requestPasswordReset("invalid.login@localhost");
+        userRepository.save(user).block();
+        Optional<User> maybeUser = userService.requestPasswordReset("invalid.login@localhost").blockOptional();
         assertThat(maybeUser).isNotPresent();
 
-        maybeUser = userService.requestPasswordReset(user.getEmail());
+        maybeUser = userService.requestPasswordReset(user.getEmail()).blockOptional();
         assertThat(maybeUser).isPresent();
         assertThat(maybeUser.orElse(null).getEmail()).isEqualTo(user.getEmail());
         assertThat(maybeUser.orElse(null).getResetDate()).isNotNull();
@@ -71,11 +70,11 @@ public class UserServiceIntTest {
     @Test
     public void assertThatOnlyActivatedUserCanRequestPasswordReset() {
         user.setActivated(false);
-        userRepository.save(user);
+        userRepository.save(user).block();
 
-        Optional<User> maybeUser = userService.requestPasswordReset(user.getLogin());
+        Optional<User> maybeUser = userService.requestPasswordReset(user.getLogin()).blockOptional();
         assertThat(maybeUser).isNotPresent();
-        userRepository.delete(user);
+        userRepository.delete(user).block();
     }
 
     @Test
@@ -85,11 +84,11 @@ public class UserServiceIntTest {
         user.setActivated(true);
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
-        userRepository.save(user);
+        userRepository.save(user).block();
 
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey()).blockOptional();
         assertThat(maybeUser).isNotPresent();
-        userRepository.delete(user);
+        userRepository.delete(user).block();
     }
 
     @Test
@@ -98,11 +97,11 @@ public class UserServiceIntTest {
         user.setActivated(true);
         user.setResetDate(daysAgo);
         user.setResetKey("1234");
-        userRepository.save(user);
+        userRepository.save(user).block();
 
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey()).blockOptional();
         assertThat(maybeUser).isNotPresent();
-        userRepository.delete(user);
+        userRepository.delete(user).block();
     }
 
     @Test
@@ -113,40 +112,43 @@ public class UserServiceIntTest {
         user.setActivated(true);
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
-        userRepository.save(user);
+        userRepository.save(user).block();
 
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey()).blockOptional();
         assertThat(maybeUser).isPresent();
         assertThat(maybeUser.orElse(null).getResetDate()).isNull();
         assertThat(maybeUser.orElse(null).getResetKey()).isNull();
         assertThat(maybeUser.orElse(null).getPassword()).isNotEqualTo(oldPassword);
 
-        userRepository.delete(user);
+        userRepository.delete(user).block();
     }
 
     @Test
     public void testFindNotActivatedUsersByCreationDateBefore() {
         Instant now = Instant.now();
         user.setActivated(false);
-        User dbUser = userRepository.save(user);
+        User dbUser = userRepository.save(user).block();
         dbUser.setCreatedDate(now.minus(4, ChronoUnit.DAYS));
-        userRepository.save(user);
-        List<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
+        userRepository.save(user).block();
+        List<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS))
+            .collectList().block();
         assertThat(users).isNotEmpty();
         userService.removeNotActivatedUsers();
-        users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
+        users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS))
+            .collectList().block();
         assertThat(users).isEmpty();
     }
 
     @Test
     public void assertThatAnonymousUserIsNotGet() {
         user.setLogin(Constants.ANONYMOUS_USER);
-        if (!userRepository.findOneByLogin(Constants.ANONYMOUS_USER).isPresent()) {
-            userRepository.save(user);
+        if (!userRepository.findOneByLogin(Constants.ANONYMOUS_USER).blockOptional().isPresent()) {
+            userRepository.save(user).block();
         }
-        final PageRequest pageable = PageRequest.of(0, (int) userRepository.count());
-        final Page<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable);
-        assertThat(allManagedUsers.getContent().stream()
+        final PageRequest pageable = PageRequest.of(0, (int) userRepository.count().block().intValue());
+        final List<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable)
+            .collectList().block();
+        assertThat(allManagedUsers.stream()
             .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin())))
             .isTrue();
     }
@@ -156,14 +158,14 @@ public class UserServiceIntTest {
     public void testRemoveNotActivatedUsers() {
 
         user.setActivated(false);
-        userRepository.save(user);
+        userRepository.save(user).block();
         // Let the audit first set the creation date but then update it
         user.setCreatedDate(Instant.now().minus(30, ChronoUnit.DAYS));
-        userRepository.save(user);
+        userRepository.save(user).block();
 
-        assertThat(userRepository.findOneByLogin("johndoe")).isPresent();
+        assertThat(userRepository.findOneByLogin("johndoe").blockOptional()).isPresent();
         userService.removeNotActivatedUsers();
-        assertThat(userRepository.findOneByLogin("johndoe")).isNotPresent();
+        assertThat(userRepository.findOneByLogin("johndoe").blockOptional()).isNotPresent();
     }
 
 }

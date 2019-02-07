@@ -9,25 +9,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@EnableMongoRepositories("com.msst.platform.repository")
+@EnableMongoRepositories(basePackages = "com.msst.platform.repository", includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, value = MongoRepository.class))
+@EnableReactiveMongoRepositories("com.msst.platform.repository.reactive")
 @Profile("!" + JHipsterConstants.SPRING_PROFILE_CLOUD)
-@Import(value = MongoAutoConfiguration.class)
+@Import(value = {MongoAutoConfiguration.class, MongoReactiveAutoConfiguration.class})
 @EnableMongoAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class DatabaseConfiguration {
 

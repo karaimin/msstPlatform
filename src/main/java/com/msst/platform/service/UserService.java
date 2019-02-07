@@ -3,8 +3,8 @@ package com.msst.platform.service;
 import com.msst.platform.config.Constants;
 import com.msst.platform.domain.Authority;
 import com.msst.platform.domain.User;
-import com.msst.platform.repository.AuthorityRepository;
-import com.msst.platform.repository.UserRepository;
+import com.msst.platform.repository.reactive.AuthorityRepository;
+import com.msst.platform.repository.reactive.UserRepository;
 import com.msst.platform.security.AuthoritiesConstants;
 import com.msst.platform.security.SecurityUtils;
 import com.msst.platform.service.dto.UserDTO;
@@ -13,16 +13,19 @@ import com.msst.platform.web.rest.errors.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service class for managing users.
@@ -44,76 +47,83 @@ public class UserService {
         this.authorityRepository = authorityRepository;
     }
 
-    public Optional<User> activateRegistration(String key) {
+    public Mono<User> activateRegistration(String key) {
         log.debug("Activating user for activation key {}", key);
         return userRepository.findOneByActivationKey(key)
-            .map(user -> {
+            .flatMap(user -> {
                 // activate given user for the registration key.
                 user.setActivated(true);
                 user.setActivationKey(null);
-                userRepository.save(user);
-                log.debug("Activated user: {}", user);
-                return user;
-            });
+                return updateUser(user);
+            })
+            .doOnNext(user -> log.debug("Activated user: {}", user));
     }
 
-    public Optional<User> completePasswordReset(String newPassword, String key) {
+    public Mono<User> completePasswordReset(String newPassword, String key) {
         log.debug("Reset user password for reset key {}", key);
         return userRepository.findOneByResetKey(key)
             .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400)))
-            .map(user -> {
+            .flatMap(user -> {
                 user.setPassword(passwordEncoder.encode(newPassword));
                 user.setResetKey(null);
                 user.setResetDate(null);
-                userRepository.save(user);
-                return user;
+                return updateUser(user);
             });
     }
 
-    public Optional<User> requestPasswordReset(String mail) {
+    public Mono<User> requestPasswordReset(String mail) {
         return userRepository.findOneByEmailIgnoreCase(mail)
             .filter(User::getActivated)
-            .map(user -> {
+            .flatMap(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
-                userRepository.save(user);
-                return user;
+                return updateUser(user);
             });
     }
 
-    public User registerUser(UserDTO userDTO, String password) {
-        userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).ifPresent(existingUser -> {
-            boolean removed = removeNonActivatedUser(existingUser);
-            if (!removed) {
-                throw new LoginAlreadyUsedException();
-            }
-        });
-        userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
-            boolean removed = removeNonActivatedUser(existingUser);
-            if (!removed) {
-                throw new EmailAlreadyUsedException();
-            }
-        });
-        User newUser = new User();
-        String encryptedPassword = passwordEncoder.encode(password);
-        newUser.setLogin(userDTO.getLogin().toLowerCase());
-        // new user gets initially a generated password
-        newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(userDTO.getFirstName());
-        newUser.setLastName(userDTO.getLastName());
-        newUser.setEmail(userDTO.getEmail().toLowerCase());
-        newUser.setImageUrl(userDTO.getImageUrl());
-        newUser.setLangKey(userDTO.getLangKey());
-        // new user is not active
-        newUser.setActivated(false);
-        // new user gets registration key
-        newUser.setActivationKey(RandomUtil.generateActivationKey());
-        Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
-        newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
+    public Mono<User> registerUser(UserDTO userDTO, String password) {
+        return userRepository.findOneByLogin(userDTO.getLogin().toLowerCase())
+            .flatMap(existingUser -> {
+                if (!existingUser.getActivated()) {
+                    this.clearUserCaches(existingUser);
+                    return userRepository.delete(existingUser);
+                } else {
+                    throw new LoginAlreadyUsedException();
+                }
+            })
+            .then(userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()))
+            .flatMap(existingUser -> {
+                if (!existingUser.getActivated()) {
+                    this.clearUserCaches(existingUser);
+                    return userRepository.delete(existingUser);
+                } else {
+                    throw new EmailAlreadyUsedException();
+                }
+            })
+            .thenReturn(new User())
+            .flatMap(newUser -> {
+                String encryptedPassword = passwordEncoder.encode(password);
+                newUser.setLogin(userDTO.getLogin().toLowerCase());
+                // new user gets initially a generated password
+                newUser.setPassword(encryptedPassword);
+                newUser.setFirstName(userDTO.getFirstName());
+                newUser.setLastName(userDTO.getLastName());
+                newUser.setEmail(userDTO.getEmail().toLowerCase());
+                newUser.setImageUrl(userDTO.getImageUrl());
+                newUser.setLangKey(userDTO.getLangKey());
+                // new user is not active
+                newUser.setActivated(false);
+                // new user gets registration key
+                newUser.setActivationKey(RandomUtil.generateActivationKey());
+                Set<Authority> authorities = new HashSet<>();
+                return authorityRepository.findById(AuthoritiesConstants.USER)
+                    .map(authorities::add)
+                    .thenReturn(newUser)
+                    .doOnNext(user -> user.setAuthorities(authorities))
+                    .flatMap(this::createUser)
+                    .doOnNext(this::clearUserCaches)
+                    .doOnNext(user -> log.debug("Created Information for User: {}", user));
+            });
     }
 
     private boolean removeNonActivatedUser(User existingUser){
@@ -124,7 +134,7 @@ public class UserService {
         return true;
     }
 
-    public User createUser(UserDTO userDTO) {
+    public Mono<User> createUser(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());
         user.setFirstName(userDTO.getFirstName());
@@ -141,17 +151,11 @@ public class UserService {
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
-        if (userDTO.getAuthorities() != null) {
-            Set<Authority> authorities = userDTO.getAuthorities().stream()
-                .map(authorityRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
-            user.setAuthorities(authorities);
-        }
-        userRepository.save(user);
-        log.debug("Created Information for User: {}", user);
-        return user;
+        return Flux.fromIterable(Optional.ofNullable(userDTO.getAuthorities()).orElse(new HashSet<>()))
+            .flatMap(authorityRepository::findById)
+            .doOnNext(authority -> user.getAuthorities().add(authority))
+            .then(createUser(user))
+            .doOnNext(user1 -> log.debug("Created Information for User: {}", user1));
     }
 
     /**
@@ -163,18 +167,19 @@ public class UserService {
      * @param langKey language key
      * @param imageUrl image URL of user
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
-        SecurityUtils.getCurrentUserLogin()
+    public Mono<Void> updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
+        return SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
-            .ifPresent(user -> {
+            .flatMap(user -> {
                 user.setFirstName(firstName);
                 user.setLastName(lastName);
                 user.setEmail(email.toLowerCase());
                 user.setLangKey(langKey);
                 user.setImageUrl(imageUrl);
-                userRepository.save(user);
-                log.debug("Changed Information for User: {}", user);
-            });
+                return updateUser(user);
+            })
+            .doOnNext(user -> log.debug("Changed Information for User: {}", user))
+            .then();
     }
 
     /**
@@ -183,12 +188,9 @@ public class UserService {
      * @param userDTO user to update
      * @return updated user
      */
-    public Optional<UserDTO> updateUser(UserDTO userDTO) {
-        return Optional.of(userRepository
-            .findById(userDTO.getId()))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .map(user -> {
+    public Mono<UserDTO> updateUser(UserDTO userDTO) {
+        return userRepository.findById(userDTO.getId())
+            .flatMap(user -> {
                 user.setLogin(userDTO.getLogin().toLowerCase());
                 user.setFirstName(userDTO.getFirstName());
                 user.setLastName(userDTO.getLastName());
@@ -198,53 +200,75 @@ public class UserService {
                 user.setLangKey(userDTO.getLangKey());
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
-                userDTO.getAuthorities().stream()
-                    .map(authorityRepository::findById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .forEach(managedAuthorities::add);
-                userRepository.save(user);
-                log.debug("Changed Information for User: {}", user);
-                return user;
+                return Flux.fromIterable(userDTO.getAuthorities())
+                    .flatMap(authorityRepository::findById)
+                    .map(managedAuthorities::add)
+                    .then(Mono.just(user));
             })
+            .flatMap(this::updateUser)
+            .doOnNext(user -> log.debug("Changed Information for User: {}", user))
             .map(UserDTO::new);
     }
 
-    public void deleteUser(String login) {
-        userRepository.findOneByLogin(login).ifPresent(user -> {
-            userRepository.delete(user);
-            log.debug("Deleted User: {}", user);
-        });
+    private Mono<User> updateUser(User user) {
+        return SecurityUtils.getCurrentUserLogin()
+            .switchIfEmpty(Mono.just(Constants.SYSTEM_ACCOUNT))
+            .flatMap(login -> {
+                user.setLastModifiedBy(login);
+                return userRepository.save(user);
+            });
     }
 
-    public void changePassword(String currentClearTextPassword, String newPassword) {
-        SecurityUtils.getCurrentUserLogin()
+    private Mono<User> createUser(User user) {
+        return SecurityUtils.getCurrentUserLogin()
+            .switchIfEmpty(Mono.just(Constants.SYSTEM_ACCOUNT))
+            .flatMap(login -> {
+                user.setCreatedBy(login);
+                user.setLastModifiedBy(login);
+                return userRepository.save(user);
+            });
+    }
+
+    public Mono<Void> deleteUser(String login) {
+        return userRepository.findOneByLogin(login)
+            .flatMap(user -> userRepository.delete(user).thenReturn(user))
+            .doOnNext(user -> log.debug("Deleted User: {}", user))
+            .then();
+    }
+
+    public Mono<Void> changePassword(String currentClearTextPassword, String newPassword) {
+        return SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
-            .ifPresent(user -> {
+            .flatMap(user -> {
                 String currentEncryptedPassword = user.getPassword();
                 if (!passwordEncoder.matches(currentClearTextPassword, currentEncryptedPassword)) {
                     throw new InvalidPasswordException();
                 }
                 String encryptedPassword = passwordEncoder.encode(newPassword);
                 user.setPassword(encryptedPassword);
-                userRepository.save(user);
-                log.debug("Changed password for User: {}", user);
-            });
+                return updateUser(user);
+            })
+            .doOnNext(user -> log.debug("Changed password for User: {}", user))
+            .then();
     }
 
-    public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
+    public Flux<UserDTO> getAllManagedUsers(Pageable pageable) {
         return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
     }
 
-    public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+    public Mono<Long> countManagedUsers() {
+        return userRepository.countAllByLoginNot(Constants.ANONYMOUS_USER);
+    }
+
+    public Mono<User> getUserWithAuthoritiesByLogin(String login) {
         return userRepository.findOneByLogin(login);
     }
 
-    public Optional<User> getUserWithAuthorities(String id) {
+    public Mono<User> getUserWithAuthorities(String id) {
         return userRepository.findById(id);
     }
 
-    public Optional<User> getUserWithAuthorities() {
+    public Mono<User> getUserWithAuthorities() {
         return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneByLogin);
     }
 
@@ -257,16 +281,15 @@ public class UserService {
     public void removeNotActivatedUsers() {
         userRepository
             .findAllByActivatedIsFalseAndCreatedDateBefore(Instant.now().minus(3, ChronoUnit.DAYS))
-            .forEach(user -> {
-                log.debug("Deleting not activated user {}", user.getLogin());
-                userRepository.delete(user);
-            });
+            .flatMap(user -> userRepository.delete(user).thenReturn(user))
+            .doOnNext(user -> log.debug("Deleted User: {}", user))
+            .blockLast();
     }
 
     /**
      * @return a list of all the authorities
      */
-    public List<String> getAuthorities() {
-        return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    public Flux<String> getAuthorities() {
+        return authorityRepository.findAll().map(Authority::getName);
     }
 }

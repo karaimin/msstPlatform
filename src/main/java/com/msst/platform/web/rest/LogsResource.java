@@ -7,9 +7,7 @@ import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import reactor.core.publisher.Flux;
 
 /**
  * Controller for view and managing Log Level at runtime.
@@ -19,12 +17,10 @@ import java.util.stream.Collectors;
 public class LogsResource {
 
     @GetMapping("/logs")
-    public List<LoggerVM> getList() {
+    public Flux<LoggerVM> getList() {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        return context.getLoggerList()
-            .stream()
-            .map(LoggerVM::new)
-            .collect(Collectors.toList());
+        return Flux.fromIterable(context.getLoggerList())
+            .map(LoggerVM::new);
     }
 
     @PutMapping("/logs")
