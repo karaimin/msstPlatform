@@ -85,7 +85,6 @@ public class UserService {
         return userRepository.findOneByLogin(userDTO.getLogin().toLowerCase())
             .flatMap(existingUser -> {
                 if (!existingUser.getActivated()) {
-                    this.clearUserCaches(existingUser);
                     return userRepository.delete(existingUser);
                 } else {
                     throw new LoginAlreadyUsedException();
@@ -94,7 +93,6 @@ public class UserService {
             .then(userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()))
             .flatMap(existingUser -> {
                 if (!existingUser.getActivated()) {
-                    this.clearUserCaches(existingUser);
                     return userRepository.delete(existingUser);
                 } else {
                     throw new EmailAlreadyUsedException();
@@ -121,7 +119,6 @@ public class UserService {
                     .thenReturn(newUser)
                     .doOnNext(user -> user.setAuthorities(authorities))
                     .flatMap(this::createUser)
-                    .doOnNext(this::clearUserCaches)
                     .doOnNext(user -> log.debug("Created Information for User: {}", user));
             });
     }

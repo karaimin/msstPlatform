@@ -73,6 +73,7 @@ public class SecurityConfiguration {
         .and()
             .authorizeExchange()
             .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .pathMatchers("/*").permitAll()
             .pathMatchers("/app/**/*.js").permitAll()
             .pathMatchers("/app/**/*.html").permitAll()
             .pathMatchers("/i18n/**").permitAll()

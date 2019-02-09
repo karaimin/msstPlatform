@@ -8,6 +8,7 @@ import com.msst.platform.service.LineVersionRatingService;
 import com.msst.platform.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -37,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MsstPlatformApp.class)
+@Ignore
 public class LineVersionRatingResourceIntTest {
 
     private static final Integer DEFAULT_RATING = 1;

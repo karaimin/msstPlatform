@@ -2,7 +2,6 @@ package com.msst.platform.facade.impl;
 
 import com.msst.platform.domain.Movie;
 import com.msst.platform.domain.Subtitle;
-import com.msst.platform.domain.SubtitleLine;
 import com.msst.platform.facade.MsstPlatformFacade;
 import com.msst.platform.service.MovieService;
 import com.msst.platform.service.SubtitleLineService;
@@ -14,7 +13,10 @@ import com.msst.platform.web.rest.errors.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
