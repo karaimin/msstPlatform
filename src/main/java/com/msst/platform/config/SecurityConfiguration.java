@@ -81,6 +81,8 @@ public class SecurityConfiguration {
             .pathMatchers("/swagger-ui/index.html").permitAll()
             .pathMatchers("/test/**").permitAll()
             .pathMatchers("/api/register").permitAll()
+            .pathMatchers("/api/subtitles/pending/*").permitAll()
+            .pathMatchers("/api/subtitles/translate/*").permitAll()
             .pathMatchers("/api/activate").permitAll()
             .pathMatchers("/api/authenticate").permitAll()
             .pathMatchers("/api/account/reset-password/init").permitAll()

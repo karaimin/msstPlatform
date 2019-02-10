@@ -2,16 +2,22 @@ package com.msst.platform.facade.impl;
 
 import com.msst.platform.domain.Movie;
 import com.msst.platform.domain.Subtitle;
+import com.msst.platform.domain.SubtitleLine;
 import com.msst.platform.facade.MsstPlatformFacade;
 import com.msst.platform.service.MovieService;
+import com.msst.platform.service.ReactiveSubtitleService;
 import com.msst.platform.service.SubtitleLineService;
 import com.msst.platform.service.SubtitleService;
 import com.msst.platform.service.dto.MovieInfo;
 import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
+import com.msst.platform.service.dto.TranslatingLineInfo;
 import com.msst.platform.service.mapper.MovieMapper;
+import com.msst.platform.web.rest.errors.InternalServerErrorException;
 import com.msst.platform.web.rest.errors.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +33,9 @@ public class DefaultMsstPlaftormFacade implements MsstPlatformFacade {
 
   @Autowired
   private SubtitleService subtitleService;
+
+  @Autowired
+  private ReactiveSubtitleService reactiveSubtitleService;
 
   @Autowired
   private SubtitleLineService subtitleLineService;
@@ -86,5 +95,44 @@ public class DefaultMsstPlaftormFacade implements MsstPlatformFacade {
         .parent(subtitleService.create(parentSubtitle))
     );
     // @formatter:on
+  }
+
+  @Override
+  public Mono<Subtitle> getPendingSubtitle(String id)  {
+    return reactiveSubtitleService.getPendingSubtitle(id);
+  }
+
+  public Flux<TranslatingLineInfo> getParentLinesInfo(String subtitleId) {
+    return reactiveSubtitleService.getParentSubtitleLines(subtitleId)
+      .map(subtitleLine -> {
+        TranslatingLineInfo lineInfo = new TranslatingLineInfo();
+        lineInfo.setSequence(subtitleLine.getSequenceNumber());
+        lineInfo.setParentLineId(subtitleLine.getId());
+        lineInfo.setParentText(
+          subtitleLine.getVersions().stream()
+            .findFirst()
+            .orElseThrow(() -> new InternalServerErrorException("No versions found in parent subtitle"))
+            .getText()
+        );
+        return lineInfo;
+      });
+
+  }
+
+  @Override
+  public List<TranslatingLineInfo> getParentLinesInfoList(String subtitleId) {
+    return subtitleService.getParentSubtitle(subtitleId).getLines().stream()
+      .map(subtitleLine -> {
+        TranslatingLineInfo lineInfo = new TranslatingLineInfo();
+        lineInfo.setSequence(subtitleLine.getSequenceNumber());
+        lineInfo.setParentLineId(subtitleLine.getId());
+        lineInfo.setParentText(
+          subtitleLine.getVersions().stream()
+            .findFirst()
+            .orElseThrow(() -> new InternalServerErrorException("No versions found in parent subtitle"))
+            .getText()
+        );
+        return lineInfo;
+      }).collect(Collectors.toList());
   }
 }

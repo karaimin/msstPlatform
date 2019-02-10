@@ -7,6 +7,7 @@ import com.msst.platform.domain.file.locator.SubtitleLocator;
 import com.msst.platform.repository.SubtitleRepository;
 import com.msst.platform.service.SubtitleService;
 import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
+import com.msst.platform.web.rest.errors.SubtitleFormatException;
 import com.msst.platform.web.rest.errors.SubtitleTranslationAlreadyStartedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +137,11 @@ public class SubtitleServiceImpl implements SubtitleService {
     }
 
     return parentLocalSubtitle.orElseGet(() -> downloadSubtitle(subtitleInfo.getProviderId()));
+  }
+
+  @Override
+  public Subtitle getParentSubtitle(String subtitleId) {
+    return subtitleRepository.findById(subtitleId).orElseThrow(() -> new SubtitleFormatException("some")).getParent();
   }
 
   private Subtitle convertSubtitleContent(SubtitleContent content) {

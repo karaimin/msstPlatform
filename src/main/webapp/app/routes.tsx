@@ -14,6 +14,7 @@ import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoute from 'app/shared/error/error-boundary-route';
 import { AUTHORITIES } from 'app/config/constants';
 import MovieInfo from 'app/entities/info';
+import TranslateInfo from 'app/entities/info/subpending';
 
 // tslint:disable:space-in-parens
 const Account = Loadable({
@@ -34,6 +35,7 @@ const Routes = () => (
       <ErrorBoundaryRoute path="/logout" component={Logout} />
       <ErrorBoundaryRoute path="/register" component={Register} />
       <ErrorBoundaryRoute path="/movieInfo" component={MovieInfo} />
+      <ErrorBoundaryRoute path="/subtitles/translate" component={TranslateInfo} />
       <ErrorBoundaryRoute path="/activate/:key?" component={Activate} />
       <ErrorBoundaryRoute path="/reset/request" component={PasswordResetInit} />
       <ErrorBoundaryRoute path="/reset/finish/:key?" component={PasswordResetFinish} />

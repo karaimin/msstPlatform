@@ -35,6 +35,7 @@ import lineVersionRating, {
 import movieInfo, {
     MovieInfoState
 } from 'app/entities/info/movie-info.reducer';
+import translateInfo, { TranslateInfoState } from 'app/entities/info/subpending/sub-lines.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -49,6 +50,7 @@ export interface IRootState {
   readonly settings: SettingsState;
   readonly movie: MovieState;
   readonly movieInfo: MovieInfoState;
+  readonly translateInfo: TranslateInfoState;
   readonly subtitle: SubtitleState;
   readonly subtitleLine: SubtitleLineState;
   readonly lineVersion: LineVersionState;
@@ -69,6 +71,7 @@ const rootReducer = combineReducers<IRootState>({
   settings,
   movie,
   movieInfo,
+  translateInfo,
   subtitle,
   subtitleLine,
   lineVersion,
