@@ -1,5 +1,6 @@
 export interface ITranslateInfo {
-  parentId?: string;
+  parentLineId?: string;
+  currentLineId?: string;
   sequence?: string;
   parentText?: string;
 }

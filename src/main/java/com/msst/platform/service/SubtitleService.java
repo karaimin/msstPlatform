@@ -55,4 +55,8 @@ public interface SubtitleService {
    Subtitle getTranslationSourceSubtitle(StartTranslateSubtitleTranslateInfo subtitleInfo, String movieId);
 
    Subtitle getParentSubtitle(String subtitleId);
+
+   Subtitle finishSubtitleTranslate(String subtitleId);
+
+   List<Subtitle> getSubtitlesFinishedTranslation();
 }

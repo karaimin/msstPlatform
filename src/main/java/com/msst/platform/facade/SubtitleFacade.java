@@ -1,5 +1,6 @@
 package com.msst.platform.facade;
 
+import com.msst.platform.domain.LineVersion;
 import com.msst.platform.domain.Subtitle;
 import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
 import com.msst.platform.service.dto.TranslatingLineInfo;
@@ -16,4 +17,12 @@ public interface SubtitleFacade {
   Flux<TranslatingLineInfo> getParentLinesInfo(String subtitleId);
 
   List<TranslatingLineInfo> getParentLinesInfoList(String subtitleId);
+
+  List<LineVersion> getTranslatedLineVersions(String lineId);
+
+  LineVersion addNewTranslatedLine(String id, LineVersion lineVersion);
+
+  void finishSubtitleTranslate(String subtitleId);
+
+  List<Subtitle> getSubtitlesFinishedTranslation();
 }

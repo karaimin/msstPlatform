@@ -1,7 +1,12 @@
 package com.msst.platform.web.rest;
+import com.msst.platform.domain.LineVersion;
 import com.msst.platform.domain.Subtitle;
+import com.msst.platform.domain.SubtitleLine;
 import com.msst.platform.facade.MsstPlatformFacade;
 import com.msst.platform.facade.SubtitleFacade;
+import com.msst.platform.security.AuthoritiesConstants;
+import com.msst.platform.service.LineVersionAddedEvent;
+import com.msst.platform.service.LineVersionAddedEventPublisher;
 import com.msst.platform.service.SubtitleService;
 import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
 import com.msst.platform.service.dto.TranslatingLineInfo;
@@ -13,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -37,10 +43,12 @@ public class SubtitleResource {
 
     private final SubtitleService subtitleService;
     private final SubtitleFacade subtitleFacade;
+    private final Flux<LineVersionAddedEvent> events;
 
-    public SubtitleResource(SubtitleService subtitleService, SubtitleFacade subtitleFacade) {
+    public SubtitleResource(SubtitleService subtitleService, SubtitleFacade subtitleFacade, LineVersionAddedEventPublisher versionPublisher) {
         this.subtitleService = subtitleService;
         this.subtitleFacade = subtitleFacade;
+        this.events = Flux.create(versionPublisher).share();
     }
 
     /**
@@ -106,6 +114,21 @@ public class SubtitleResource {
         .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
+    @GetMapping(value = "/subtitles/finished")
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public Mono<ResponseEntity<List<Subtitle>>> getFinishedSubtitles() {
+      log.debug("REST request to get all finished subtitles");
+      return Mono.just(ResponseEntity.ok(subtitleFacade.getSubtitlesFinishedTranslation()));
+    }
+
+    @GetMapping(value = "/subtitles/finish/{id}")
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public Mono<ResponseEntity<Void>> finishTranslateSubtitle(@PathVariable String id) {
+      log.debug("REST request to finish and upload translated subtitle");
+      subtitleFacade.finishSubtitleTranslate(id);
+      return Mono.just(ResponseEntity.noContent().build());
+    }
+
    /* @GetMapping(value = "/subtitles/translate/{id}", produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
   public Flux<TranslatingLineInfo> getLinesOriginInfo(@PathVariable String id) {
     return subtitleFacade.getParentLinesInfo(id);
@@ -116,6 +139,15 @@ public class SubtitleResource {
     return subtitleFacade.getParentLinesInfoList(id);
   }
 
+  @GetMapping(value = "/subtitles/lines/{id}")
+  public List<LineVersion> getTranslatedLineVersions(@PathVariable String id) {
+    return subtitleFacade.getTranslatedLineVersions(id);
+  }
+
+  @PostMapping(value = "/subtitles/lines/{id}")
+  public ResponseEntity<LineVersion> addNewLineVersion(@PathVariable String id, @RequestBody LineVersion lineVersion) {
+    return ResponseEntity.ok(subtitleFacade.addNewTranslatedLine(id, lineVersion));
+  }
 
     /**
      * GET  /subtitles : get all the subtitles.

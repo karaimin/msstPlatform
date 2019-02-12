@@ -6,31 +6,104 @@ import { Button, Col, Row, Table } from 'reactstrap';
 
 import { IRootState } from 'app/shared/reducers';
 import { getLinesOrigin } from './sub-lines.reducer';
+import VersionsList from 'app/entities/info/subpending/translated-versions';
+import { Storage } from 'react-jhipster';
+import { AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
+import SubmitVersionForm from 'app/entities/info/subpending/submit-version';
 
 export interface ITranslateInfoProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
-export interface IActiveLineState {
-  showVersions: boolean;
-  parentId?: string;
-  subtitleId?: string;
+export interface IVersionData {
+  id?: string;
+  version?: string;
+  text?: string;
 }
 
-/*export const initialActiveLines : IActiveLineState = {
-  showVersions: false
-};*/
+export interface IActiveLineState {
+  showVersions: boolean;
+  parentLineId?: string;
+  currentLineId?: string;
+  subtitleId?: string;
+  versionData: IVersionData[];
+  eventSource?: EventSource;
+}
 
-export class TranslateInfo extends React.Component<ITranslateInfoProps> {
-  activeLines: IActiveLineState = {
-    showVersions: false
-  };
+export interface SubmitNewVersion {
+  version?: string;
+}
 
+export const initialActiveLines: IActiveLineState = {
+  showVersions: false,
+  versionData: []
+};
+
+export class TranslateInfo extends React.Component<ITranslateInfoProps, IActiveLineState> {
   constructor(props) {
     super(props);
+    this.state = {
+      showVersions: false,
+      versionData: []
+    };
+
     this.onVersionClick = this.onVersionClick.bind(this);
   }
 
   onVersionClick = (aLines: IActiveLineState) => {
-    this.activeLines = aLines;
+    // this.state = aLines;
+    console.log('setting params' + aLines.currentLineId);
+    this.setState({
+      showVersions: aLines.showVersions,
+      // showVersions: !this.state.showVersions,
+      parentLineId: aLines.parentLineId,
+      subtitleId: aLines.subtitleId,
+      currentLineId: aLines.currentLineId
+    });
+
+    this.fetchData(aLines.currentLineId);
+    this.listenFroSSEEvents(aLines.currentLineId);
+  };
+
+  fetchData = (currentLineId: string) => {
+    const token = Storage.local.get('jhi-authenticationToken') || Storage.session.get('jhi-authenticationToken');
+    console.log('token ' + token);
+    const request = {
+      headers: { Authorization: 'Bearer ' + token }
+    };
+
+    const responseData = fetch('http://localhost:8080/api/subtitles/lines/' + currentLineId, request)
+      .then(response => response.json())
+      .then(data => this.setState({ versionData: data }));
+  };
+
+  listenFroSSEEvents = (currentLineId: string) => {
+    console.log('props received');
+    if (this.state.currentLineId && this.state.currentLineId === currentLineId) {
+      return;
+    }
+
+    if (this.state.eventSource) {
+      this.state.eventSource.close();
+      console.log('eventsource closed');
+    }
+
+    const eventSource = new EventSource('http://localhost:8080/api/sse/subtitles/lines/' + currentLineId, { withCredentials: false });
+    eventSource.onopen = (event: any) => console.log('open', event);
+    eventSource.onmessage = (event: any) => {
+      const profile = JSON.parse(event.data);
+
+      if (this.state.currentLineId && this.state.currentLineId === currentLineId) {
+        console.log('setting state ' + JSON.stringify(profile));
+        this.state.versionData.push(profile);
+        this.setState({ versionData: this.state.versionData });
+        // this.forceUpdate();
+      }
+    };
+
+    eventSource.onerror = (event: any) => {
+      console.log('error', event);
+    };
+
+    this.setState({ eventSource: eventSource });
   };
 
   componentDidMount() {
@@ -53,8 +126,10 @@ export class TranslateInfo extends React.Component<ITranslateInfoProps> {
                           onClick={() =>
                             this.onVersionClick({
                               showVersions: true,
-                              parentId: line.parentId,
-                              subtitleId: this.props.match.params.id
+                              parentLineId: line.parentLineId,
+                              subtitleId: this.props.match.params.id,
+                              currentLineId: line.currentLineId,
+                              versionData: []
                             })
                           }
                         >
@@ -74,24 +149,21 @@ export class TranslateInfo extends React.Component<ITranslateInfoProps> {
             <div className="mesgs">
               <div className="msg_history">
                 <div className="incoming_msg">
-                  {this.activeLines.showVersions ? this.activeLines.parentId : 'noooo'}
-                  {/*<div className="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                         alt="sunil"/></div>
-                  <div className="received_msg">
-                    <div className="received_withd_msg">
-                      <p>Test which is a new approach to have all
-                        solutions</p>
-                      <span className="time_date"> 11:01 AM | June 9</span>
-                    </div>
-                  </div>*/}
+                  {this.state.showVersions ? (
+                    <VersionsList
+                      currentLineId={this.state.currentLineId}
+                      showVersions={this.state.showVersions}
+                      versionData={this.state.versionData}
+                      {...this.props}
+                    />
+                  ) : (
+                    'noooo'
+                  )}
                 </div>
               </div>
               <div className="type_msg">
                 <div className="input_msg_write">
-                  <input type="text" className="write_msg" placeholder="Type a message" />
-                  <button className="msg_send_btn" type="button">
-                    <i className="fa fa-paper-plane-o" aria-hidden="true" />
-                  </button>
+                  <SubmitVersionForm lineId={this.state.currentLineId} {...this.props} />
                 </div>
               </div>
             </div>

@@ -17,4 +17,6 @@ public interface SubtitleRepository extends MongoRepository<Subtitle, String> {
   List<Subtitle> findByVersionAndMovieIdAndLanguage(String version, String movieId, Language language);
 
   Optional<Subtitle> findByParentAndLanguage(Subtitle parent, Language language);
+
+  List<Subtitle> findAllByParentNotNull();
 }

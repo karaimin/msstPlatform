@@ -82,6 +82,8 @@ public class SecurityConfiguration {
             .pathMatchers("/test/**").permitAll()
             .pathMatchers("/api/register").permitAll()
             .pathMatchers("/api/subtitles/pending/*").permitAll()
+            .pathMatchers("/api/subtitles/lines/*").permitAll()
+            .pathMatchers("/api/sse/subtitles/lines/*").permitAll()
             .pathMatchers("/api/subtitles/translate/*").permitAll()
             .pathMatchers("/api/activate").permitAll()
             .pathMatchers("/api/authenticate").permitAll()

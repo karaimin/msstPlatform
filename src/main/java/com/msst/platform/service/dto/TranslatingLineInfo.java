@@ -3,6 +3,7 @@ package com.msst.platform.service.dto;
 public class TranslatingLineInfo {
   private int sequence;
   private String parentLineId;
+  private String currentLineId;
   private String parentText;
 
   public int getSequence() {
@@ -27,5 +28,13 @@ public class TranslatingLineInfo {
 
   public void setParentText(String parentText) {
     this.parentText = parentText;
+  }
+
+  public String getCurrentLineId() {
+    return currentLineId;
+  }
+
+  public void setCurrentLineId(String currentLineId) {
+    this.currentLineId = currentLineId;
   }
 }

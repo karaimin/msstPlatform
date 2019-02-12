@@ -53,12 +53,10 @@ export class MovieInfoDisplay extends React.Component<IMovieInfoDisplayProps> {
               <h5 className="card-header">Translation started subtitles</h5>
               <div className="card-body">
                 <ul className="list-unstyled mb-0">
-                  {movieEntity.pendingSubtitles
-                    ? movieEntity.pendingSubtitles.map((psub, i) => (
+                  {movieEntity.pendingTranslates
+                    ? movieEntity.pendingTranslates.map((psub, i) => (
                         <li>
-                          <Link to="#" className="alert-link">
-                            {`${movieEntity.name}-${psub.language}-${psub.version}`}
-                          </Link>
+                          <Link to={'/subtitles/translate/' + psub.id}>{`${movieEntity.name}-${psub.language}-${psub.version}`}</Link>
                         </li>
                       ))
                     : ' '}
