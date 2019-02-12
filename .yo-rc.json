@@ -5,6 +5,7 @@
     },
     "jhipsterVersion": "5.8.1",
     "applicationType": "monolith",
+    "reactive": true,
     "baseName": "msstPlatform",
     "packageName": "com.msst.platform",
     "packageFolder": "com/msst/platform",

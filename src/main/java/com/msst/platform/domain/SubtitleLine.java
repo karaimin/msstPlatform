@@ -114,6 +114,11 @@ public class SubtitleLine implements Serializable {
         this.sequenceNumber = sequenceNumber;
     }
 
+    public SubtitleLine sequenceNumber(int sequenceNumber) {
+      this.sequenceNumber = sequenceNumber;
+      return this;
+    }
+
     public void setVersions(Set<LineVersion> lineVersions) {
         this.versions = lineVersions;
     }

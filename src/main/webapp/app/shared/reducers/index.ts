@@ -13,28 +13,29 @@ import settings, { SettingsState } from 'app/modules/account/settings/settings.r
 import passwordReset, { PasswordResetState } from 'app/modules/account/password-reset/password-reset.reducer';
 // prettier-ignore
 import movie, {
-  MovieState
+    MovieState
 } from 'app/entities/movie/movie.reducer';
 // prettier-ignore
 import subtitle, {
-  SubtitleState
+    SubtitleState
 } from 'app/entities/subtitle/subtitle.reducer';
 // prettier-ignore
 import subtitleLine, {
-  SubtitleLineState
+    SubtitleLineState
 } from 'app/entities/subtitle-line/subtitle-line.reducer';
 // prettier-ignore
 import lineVersion, {
-  LineVersionState
+    LineVersionState
 } from 'app/entities/line-version/line-version.reducer';
 // prettier-ignore
 import lineVersionRating, {
-  LineVersionRatingState
+    LineVersionRatingState
 } from 'app/entities/line-version-rating/line-version-rating.reducer';
 // prettier-ignore
 import movieInfo, {
-  MovieInfoState
+    MovieInfoState
 } from 'app/entities/info/movie-info.reducer';
+import translateInfo, { TranslateInfoState } from 'app/entities/info/subpending/sub-lines.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -49,6 +50,7 @@ export interface IRootState {
   readonly settings: SettingsState;
   readonly movie: MovieState;
   readonly movieInfo: MovieInfoState;
+  readonly translateInfo: TranslateInfoState;
   readonly subtitle: SubtitleState;
   readonly subtitleLine: SubtitleLineState;
   readonly lineVersion: LineVersionState;
@@ -69,6 +71,7 @@ const rootReducer = combineReducers<IRootState>({
   settings,
   movie,
   movieInfo,
+  translateInfo,
   subtitle,
   subtitleLine,
   lineVersion,

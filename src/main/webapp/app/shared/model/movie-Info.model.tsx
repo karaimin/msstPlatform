@@ -7,7 +7,7 @@ export interface IMovieInfo {
   duration?: Moment;
   description?: string;
   translatedSubtitles?: ISubtitle[];
-  pendingSubtitles?: ISubtitle[];
+  pendingTranslates?: ISubtitle[];
 }
 
 export const defaultValue: Readonly<IMovieInfo> = {};

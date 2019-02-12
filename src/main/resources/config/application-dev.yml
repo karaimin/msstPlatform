@@ -47,18 +47,16 @@ spring:
             uri: mongodb://localhost:27017
             database: msstPlatform
     mail:
-        host: smtp.gmail.com
-        port: 587
-        username: moviesubsever@gmail.com
-        password: Sebiz1234
-        protocol: smtp
-        properties.mail:
-            tls: true
-            debug: true
-            smtp:
-                auth: true
-                starttls.enable: true
-                ssl.trust: smtp.gmail.com
+      host: smtp.gmail.com
+      port: 587
+      username: moviesubsever@gmail.com #Replace this field with your Gmail username.
+      password: Sebiz1234           #Replace this field with your Gmail password.
+      protocol: smtp
+      tls: true
+      properties.mail.smtp:
+        auth: true
+        starttls.enable: true
+        ssl.trust: smtp.gmail.com
     messages:
         cache-duration: PT1S # 1 second, see the ISO 8601 standard
     thymeleaf:
@@ -115,7 +113,7 @@ jhipster:
             port: 5000
             queue-size: 512
 subtitle:
-  provider: google
+    provider: google
 
 # ===================================================================
 # Application specific properties

@@ -77,7 +77,7 @@ jhipster:
             report-frequency: 60 # in seconds
 
 subtitle:
-  provider: google
+    provider: google
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

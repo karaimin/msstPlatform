@@ -81,6 +81,9 @@ public class SubtitleParser {
         lineChunks.add(normalizedLine);
       }
 
+      if(!lineChunks.isEmpty()) {
+        subtitleLines.add(lineParser.parse(lineChunks, lineVersion));
+      }
       return subtitleLines;
     } catch (IOException ex){
       throw new InternalServerErrorException("Something went wrong wile parsing subtitle");

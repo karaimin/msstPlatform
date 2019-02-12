@@ -139,9 +139,8 @@ jhipster:
         contact-email:
         license:
         license-url:
-
 subtitle:
-  provider: google
+    provider: google
 
 # ===================================================================
 # Application specific properties

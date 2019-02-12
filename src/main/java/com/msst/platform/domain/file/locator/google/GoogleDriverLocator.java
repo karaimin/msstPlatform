@@ -2,6 +2,7 @@ package com.msst.platform.domain.file.locator.google;
 
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
@@ -25,14 +26,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service("google")
 public class GoogleDriverLocator implements SubtitleLocator {
   private static final String ROOT_DIRECTORY_NAME = "Subtitles";
   private static final String ERROR_MESSAGE = "Something went wrong when fetching subtitles form server";
 
-  private final Logger log = LoggerFactory.getLogger(MovieResource.class);
+  private final Logger log = LoggerFactory.getLogger(GoogleDriverLocator.class);
 
   private String rootDirectoryId;
 
@@ -99,6 +102,24 @@ public class GoogleDriverLocator implements SubtitleLocator {
 
     } catch (IOException | GeneralSecurityException e) {
       throw new InternalServerErrorException(ERROR_MESSAGE);
+    }
+  }
+
+  @Override
+  public boolean uploadFile(java.io.File file, String name) {
+    try {
+      String directoryId = getRootDirectoryId();
+
+      File fileMetadata = new File();
+      fileMetadata.setName(String.format("%s.srt", name));
+      fileMetadata.setParents(Collections.singletonList(directoryId));
+      FileContent mediaContent = new FileContent("application/octet-stream", file);
+
+      File some = driveServiceProvider.getDriveService().files().create(fileMetadata, mediaContent).setFields("id, parents").execute();
+      return true;
+    } catch (IOException | GeneralSecurityException | GoogleDriveLocatorException e) {
+      log.debug("Error uploading file", e);
+      return false;
     }
   }
 

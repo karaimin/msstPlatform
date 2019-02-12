@@ -1,6 +1,5 @@
 package com.msst.platform.service;
 
-import com.msst.platform.domain.Movie;
 import com.msst.platform.domain.Subtitle;
 import com.msst.platform.service.dto.StartTranslateSubtitleTranslateInfo;
 
@@ -54,4 +53,10 @@ public interface SubtitleService {
    Subtitle downloadSubtitle(String providerId);
 
    Subtitle getTranslationSourceSubtitle(StartTranslateSubtitleTranslateInfo subtitleInfo, String movieId);
+
+   Subtitle getParentSubtitle(String subtitleId);
+
+   Subtitle finishSubtitleTranslate(String subtitleId);
+
+   List<Subtitle> getSubtitlesFinishedTranslation();
 }

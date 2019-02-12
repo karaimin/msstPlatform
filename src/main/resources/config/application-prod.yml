@@ -117,7 +117,7 @@ jhipster:
             queue-size: 512
 
 subtitle:
-  provider: google
+    provider: google
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

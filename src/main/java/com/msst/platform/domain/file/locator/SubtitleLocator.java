@@ -3,6 +3,7 @@ package com.msst.platform.domain.file.locator;
 
 import com.msst.platform.domain.Subtitle;
 
+import java.io.File;
 import java.util.List;
 
 public interface SubtitleLocator {
@@ -17,4 +18,6 @@ public interface SubtitleLocator {
   SubtitleContent getSubtitleInfoById(String id);
 
   SubtitleContent downloadSubtitleFile(String id);
+
+  boolean uploadFile(File file, String fileName);
 }

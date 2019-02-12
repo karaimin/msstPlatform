@@ -1,5 +1,6 @@
 package com.msst.platform.service;
 
+import com.msst.platform.domain.LineVersion;
 import com.msst.platform.domain.SubtitleLine;
 
 import java.util.Collection;
@@ -42,4 +43,8 @@ public interface SubtitleLineService {
   void delete(String id);
 
   Collection<SubtitleLine> creatBulkWithSameVersion(Collection<SubtitleLine> subtitleLines);
+
+  Collection<SubtitleLine> createLinesWithEmptyVersions(Collection<SubtitleLine> subtitleLines);
+
+  LineVersion addNewTranslatedLine(String subtitleId, LineVersion lineVersion);
 }
