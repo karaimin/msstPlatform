@@ -23,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -187,7 +188,7 @@ public class SubtitleServiceImpl implements SubtitleService {
   private File writeSubtitlesToTempFile(Collection<WritableLine> writableLines) {
 
     try {
-      File tempFile = File.createTempFile("subtitle-", ".srt");
+      File tempFile = Files.createTempFile("subtitle-", ".srt").toFile();
       try(BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
         for(WritableLine line: writableLines) {
           writer.write(String.valueOf(line.getSequence()));
